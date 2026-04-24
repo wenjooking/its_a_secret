@@ -1,38 +1,47 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>For You</title>
+  <title>For You ♡</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
+  <div class="intro-card" id="introCard">
+    <div class="card">
+      <h1>Are you ready?</h1>
+      <p>I made something for you.</p>
+
+      <div class="buttons">
+        <button id="yesBtn">Yes</button>
+        <button id="noBtn">No</button>
+      </div>
+    </div>
+  </div>
+
   <section class="hero">
-    <div class="record" id="record"></div>
-
-    <button id="playBtn">Click</button>
-
-    <audio id="music" src="assets/song.mp3"></audio>
-
     <canvas id="fireworks"></canvas>
-
-    <p class="hint">Scroll ↓</p>
+    <p class="hint" id="hint">Scroll down slowly ↓</p>
   </section>
 
   <section class="letter-section">
-    <h1>给你的一封信</h1>
+    <h1>A Letter For You</h1>
 
     <div class="letter">
-        <img src="assets/letter_1.png" alt="信1" />
+      <img src="assets/letter_1.png" alt="Letter page 1" />
+      <br>
+      <img src="assets/letter_2.png" alt="Letter page 2" />
     </div>
+  </section>
 
-    <div class="letter">
-        <img src="assets/letter_2.png" alt="信2" />
-    </div>
-
-    </section>
+  <footer class="credit">
+    Credit by Wenjoo
+  </footer>
+  
+  <audio id="music" src="assets/song.mp3"></audio>
 
   <script src="script.js"></script>
+
 </body>
 </html>
