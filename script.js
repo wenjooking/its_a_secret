@@ -11,7 +11,7 @@ const ctx = canvas.getContext("2d");
 let started = false;
 
 // ===== 常量 =====
-const IMAGE_ENLARGE = 13;
+const IMAGE_ENLARGE = 11;
 const HEART_COLOR = "#FF99CC";
 
 // ===== 画布 =====
@@ -19,6 +19,7 @@ function resizeCanvas() {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
 }
+
 resizeCanvas();
 window.addEventListener("resize", resizeCanvas);
 
@@ -26,16 +27,18 @@ window.addEventListener("resize", resizeCanvas);
 function rand(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
+
 function choice(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
 // ===== 背景粒子 =====
 let bgParticles = [];
-let letterParticles = [];
 
 function createBackgroundParticles() {
   bgParticles = [];
+  
+
   for (let i = 0; i < 120; i++) {
     bgParticles.push({
       x: Math.random() * canvas.width,
@@ -43,24 +46,6 @@ function createBackgroundParticles() {
       size: Math.random() * 1.5 + 0.4,
       alpha: Math.random() * 0.6 + 0.2,
       speed: Math.random() * 0.3 + 0.05,
-      flicker: Math.random() * Math.PI * 2
-    });
-  }
-}
-
-function createLetterParticles() {
-  const section = document.querySelector(".letter-section");
-  const rect = section.getBoundingClientRect();
-
-  letterParticles = [];
-
-  for (let i = 0; i < 90; i++) {
-    letterParticles.push({
-      x: Math.random() * rect.width,
-      y: Math.random() * rect.height,
-      size: Math.random() * 1.3 + 0.3,
-      alpha: Math.random() * 0.5 + 0.2,
-      speed: Math.random() * 0.25 + 0.05,
       flicker: Math.random() * Math.PI * 2
     });
   }
@@ -89,39 +74,7 @@ function drawBackgroundParticles() {
   ctx.globalAlpha = 1;
 }
 
-function drawLetterParticles() {
-  const section = document.querySelector(".letter-section");
-  const rect = section.getBoundingClientRect();
-
-  letterParticles.forEach((p) => {
-    p.y += p.speed;
-    p.flicker += 0.03;
-
-    if (p.y > rect.height) {
-      p.y = 0;
-      p.x = Math.random() * rect.width;
-    }
-
-    const glow = p.alpha + Math.sin(p.flicker) * 0.2;
-
-    ctx.globalAlpha = Math.max(0.1, glow);
-    ctx.fillStyle = "#ffffff";
-
-    ctx.beginPath();
-    ctx.arc(
-      p.x,
-      p.y + rect.top,
-      p.size,
-      0,
-      Math.PI * 2
-    );
-    ctx.fill();
-  });
-
-  ctx.globalAlpha = 1;
-}
-
-// ===== 爱心数学 =====
+// ===== Python 爱心逻辑 =====
 function heart_function(t, shrink_ratio = IMAGE_ENLARGE) {
   let x = 16 * Math.pow(Math.sin(t), 3);
   let y = -(
@@ -147,10 +100,10 @@ function scatter_inside(x, y, beta = 0.15) {
   const ratio_x = -beta * Math.log(Math.random());
   const ratio_y = -beta * Math.log(Math.random());
 
-  return [
-    x - ratio_x * (x - cx),
-    y - ratio_y * (y - cy)
-  ];
+  const dx = ratio_x * (x - cx);
+  const dy = ratio_y * (y - cy);
+
+  return [x - dx, y - dy];
 }
 
 function shrink(x, y, ratio) {
@@ -160,10 +113,10 @@ function shrink(x, y, ratio) {
   const force =
     -1 / Math.pow((x - cx) ** 2 + (y - cy) ** 2, 0.6);
 
-  return [
-    x - ratio * force * (x - cx),
-    y - ratio * force * (y - cy)
-  ];
+  const dx = ratio * force * (x - cx);
+  const dy = ratio * force * (y - cy);
+
+  return [x - dx, y - dy];
 }
 
 function curve(p) {
@@ -177,10 +130,10 @@ function calc_position(x, y, ratio) {
   const force =
     1 / Math.pow((x - cx) ** 2 + (y - cy) ** 2, 0.52);
 
-  return [
-    x - (ratio * force * (x - cx) + rand(-1, 1)),
-    y - (ratio * force * (y - cy) + rand(-1, 1))
-  ];
+  const dx = ratio * force * (x - cx) + rand(-1, 1);
+  const dy = ratio * force * (y - cy) + rand(-1, 1);
+
+  return [x - dx, y - dy];
 }
 
 // ===== Heart 类 =====
@@ -217,13 +170,14 @@ class Heart {
 
     Array.from(this._points).forEach((k) => {
       const [x, y] = this.parse(k);
+
       for (let i = 0; i < 3; i++) {
         const [nx, ny] = scatter_inside(x, y, 0.05);
         this._edge_diffusion_points.add(this.key(nx, ny));
       }
     });
 
-    const list = Array.from(this._points).map(k => this.parse(k));
+    const list = Array.from(this._points).map((k) => this.parse(k));
 
     for (let i = 0; i < 4000; i++) {
       const [x, y] = choice(list);
@@ -234,9 +188,11 @@ class Heart {
 
   calc(frame) {
     const ratio = 10 * curve((frame / 10) * Math.PI);
+
     const halo_radius = Math.floor(
       4 + 6 * (1 + curve((frame / 10) * Math.PI))
     );
+
     const halo_number = Math.floor(
       3000 + 4000 * Math.abs(curve((frame / 10) * Math.PI) ** 2)
     );
@@ -246,32 +202,35 @@ class Heart {
 
     for (let i = 0; i < halo_number; i++) {
       const t = Math.random() * 2 * Math.PI;
-      let [x, y] = heart_function(t, 13.6);
+      let [x, y] = heart_function(t, 11.6);
       [x, y] = shrink(x, y, halo_radius);
 
       const k = this.key(x, y);
 
       if (!halo_set.has(k)) {
         halo_set.add(k);
+
         x += rand(-14, 14);
         y += rand(-14, 14);
-        all_points.push([x, y, choice([1, 2, 2])]);
+
+        const size = choice([1, 2, 2]);
+        all_points.push([x, y, size]);
       }
     }
 
-    [...this._points].forEach(k => {
+    Array.from(this._points).forEach((k) => {
       let [x, y] = this.parse(k);
       [x, y] = calc_position(x, y, ratio);
       all_points.push([x, y, rand(1, 3)]);
     });
 
-    [...this._edge_diffusion_points].forEach(k => {
+    Array.from(this._edge_diffusion_points).forEach((k) => {
       let [x, y] = this.parse(k);
       [x, y] = calc_position(x, y, ratio);
       all_points.push([x, y, rand(1, 2)]);
     });
 
-    [...this._center_diffusion_points].forEach(k => {
+    Array.from(this._center_diffusion_points).forEach((k) => {
       let [x, y] = this.parse(k);
       [x, y] = calc_position(x, y, ratio);
       all_points.push([x, y, rand(1, 2)]);
@@ -284,7 +243,6 @@ class Heart {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     drawBackgroundParticles();
-    drawLetterParticles();
 
     const points = this.all_points[frame % this.generate_frame];
 
@@ -301,7 +259,6 @@ class Heart {
 
     const cx = canvas.width / 2;
     const cy = canvas.height / 2;
-    const scrollOffset = window.scrollY;
 
     ctx.fillStyle = HEART_COLOR;
 
@@ -314,12 +271,7 @@ class Heart {
 
       ctx.globalAlpha = glow;
 
-      ctx.fillRect(
-        px + driftX,
-        py + driftY - scrollOffset,
-        size,
-        size
-      );
+      ctx.fillRect(px + driftX, py + driftY, size, size);
     });
 
     ctx.globalAlpha = 1;
@@ -348,7 +300,6 @@ yesBtn.addEventListener("click", async () => {
   await music.play();
 
   createBackgroundParticles();
-  createLetterParticles();
   heart = new Heart();
   draw();
 });

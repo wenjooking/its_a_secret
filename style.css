@@ -15,11 +15,11 @@ body {
   overflow-x: hidden;
 }
 
-/* ===== 弹窗 ===== */
+/* Popout card */
 .intro-card {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.9);
+  background: rgba(0, 0, 0, 0.86);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -33,90 +33,108 @@ body {
 }
 
 .card {
-  padding: 30px;
-  border-radius: 20px;
-  background: rgba(255,255,255,0.08);
-  backdrop-filter: blur(12px);
+  width: min(88%, 380px);
+  padding: 34px 28px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(14px);
   text-align: center;
+  animation: popout 0.8s ease;
+}
+
+@keyframes popout {
+  from {
+    opacity: 0;
+    transform: scale(0.85) translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.card h1 {
+  font-size: 32px;
+  margin-bottom: 12px;
+}
+
+.card p {
+  opacity: 0.75;
+  margin-bottom: 26px;
 }
 
 .buttons {
-  margin-top: 20px;
   display: flex;
-  gap: 10px;
+  gap: 14px;
   justify-content: center;
 }
 
 .buttons button {
-  padding: 10px 25px;
+  padding: 11px 28px;
   border-radius: 999px;
-  border: 1px solid rgba(255,255,255,0.3);
+  border: 1px solid rgba(255,255,255,0.25);
   background: transparent;
   color: white;
+  font-size: 15px;
   cursor: pointer;
+  transition: 0.25s ease;
 }
 
-/* ===== ⭐ 关键：canvas 全屏 ===== */
-#fireworks {
-  position: fixed;   /* 关键 */
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 1;
+.buttons button:hover {
+  transform: scale(1.06);
+  border-color: white;
 }
 
-/* ===== 第一屏 ===== */
+/* First screen */
 .hero {
   position: relative;
   height: 100vh;
-  z-index: 2;
+  overflow: hidden;
+}
+
+#fireworks {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
 }
 
 .hint {
   position: absolute;
-  bottom: 30px;
+  bottom: 32px;
   width: 100%;
   text-align: center;
+  font-size: 16px;
   opacity: 0;
-  transition: 1s;
+  transition: opacity 1.2s ease;
 }
 
 .hint.show {
-  opacity: 0.7;
+  opacity: 0.75;
 }
 
-/* ===== 信封区域 ===== */
+/* Letter section */
 .letter-section {
   position: relative;
-  z-index: 2;
-  min-height: 100vh;
-  padding: 100px 20px;
-  text-align: center;
-  overflow: hidden;
-
-  /* ⚠️ 关键：不能挡住粒子 */
-  background: transparent;
-}
-
-/* 标题 */
-.letter-section h1 {
-  margin-bottom: 40px;
-  font-size: 28px;
-  font-weight: 400;
-  position: relative;
   z-index: 3;
+  min-height: 100vh;
+  padding: 90px 20px;
+  background: #000;
+  text-align: center;
 }
 
-/* 信 */
+.letter-section h1 {
+  margin-bottom: 42px;
+  font-size: 30px;
+  font-weight: 400;
+}
+
 .letter {
   opacity: 0;
-  transform: translateY(60px);
+  transform: translateY(70px);
   transition: all 1s ease;
-  margin-bottom: 60px;
-  position: relative;
-  z-index: 3;
+  margin-bottom: 70px;
 }
 
 .letter.show {
@@ -125,17 +143,33 @@ body {
 }
 
 .letter img {
-  width: min(90%, 700px);
-  border-radius: 12px;
+  width: min(92%, 700px);
+  border-radius: 16px;
 }
 
-/* ===== credit ===== */
 .credit {
   padding: 30px 0;
   text-align: center;
   font-size: 14px;
-  color: rgba(255,255,255,0.4);
-  background: transparent;
+  color: rgba(255, 255, 255, 0.45);
+  background: #000;
+}
+
+.letter-section {
   position: relative;
-  z-index: 3;
+  overflow: hidden;
+}
+
+/* 背景粒子层 */
+.letter-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* 确保信在上面 */
+.letter {
+  position: relative;
+  z-index: 2;
 }
