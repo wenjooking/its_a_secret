@@ -46,9 +46,12 @@ Add an entry in `festivals/manifest.json`:
   "title": "Display name",
   "tagline": "Short line on the card",
   "emoji": "🎉",
+  "date": "26/04/2026",
   "status": "ready"
 }
 ```
+
+Add `"date"` (optional, `DD/MM/YYYY`) to show a date on the bottom-right of the card. Omit for moments without a date yet.
 
 Use `"status": "coming-soon"` until the festival page is ready (card stays disabled on the home page).
 

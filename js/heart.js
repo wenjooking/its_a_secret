@@ -51,7 +51,10 @@ window.CoupleApp = window.CoupleApp || {};
 
       const glow = p.alpha + Math.sin(p.flicker) * 0.25;
       ctx.globalAlpha = Math.max(0.1, glow);
-      ctx.fillStyle = "#ffffff";
+      ctx.fillStyle =
+        document.documentElement.getAttribute("data-theme") === "light"
+          ? "rgba(30, 30, 40, 0.35)"
+          : "#ffffff";
       ctx.beginPath();
       ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
       ctx.fill();

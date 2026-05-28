@@ -1,12 +1,13 @@
 {
-  "siteTitle": "For Us",
-  "siteSubtitle": "Tap a moment — heart, music, and your letter open right away.",
+  "siteTitle": "🐻 & 🐰",
+  "siteSubtitle": "Our memories...",
   "festivals": [
     {
       "id": "valentine",
-      "title": "A Letter For You",
-      "tagline": "Something I made for you",
+      "title": "First Letter",
+      "tagline": "The beginning of us...",
       "emoji": "♡",
+      "date": "26/04/2026",
       "status": "ready"
     },
     {

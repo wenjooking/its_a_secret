@@ -1,7 +1,7 @@
 {
   "id": "valentine",
   "status": "ready",
-  "pageTitle": "For You ♡",
+  "pageTitle": "First Letter ♡",
   "theme": {
     "heartColor": "#FF6B9D",
     "accent": "#FF6B9D",
@@ -13,7 +13,7 @@
     "hint": "Scroll to read ↓"
   },
   "letter": {
-    "title": "A Letter For You",
+    "title": "First Letter",
     "placeholder": null
   },
   "assets": {

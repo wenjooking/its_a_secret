@@ -20,21 +20,7 @@
   }
 
   function applyTheme(theme) {
-    const root = document.documentElement;
-    const accent = theme.accent || theme.heartColor;
-
-    root.style.setProperty("--theme-heart", theme.heartColor);
-    root.style.setProperty("--theme-accent", accent);
-    root.style.setProperty("--theme-bg", theme.background);
-    root.style.setProperty(
-      "--theme-glow",
-      theme.glow || `${accent}33`
-    );
-
-    const meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.setAttribute("content", theme.themeColor || theme.background);
-
-    document.body.style.background = theme.background;
+    window.CoupleApp?.theme?.applyFestival(theme);
     heart.setHeartColor(theme.heartColor);
   }
 

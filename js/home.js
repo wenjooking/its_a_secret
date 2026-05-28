@@ -8,6 +8,14 @@
     return `festival.html?id=${encodeURIComponent(id)}`;
   }
 
+  /** DD/MM/YYYY → YYYY-MM-DD for the time element's datetime attribute */
+  function formatDateForDatetime(display) {
+    const parts = display.split("/");
+    if (parts.length !== 3) return display;
+    const [day, month, year] = parts;
+    return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+  }
+
   function createCard(festival) {
     const isReady = festival.status === "ready";
     const el = document.createElement(isReady ? "a" : "article");
@@ -20,11 +28,18 @@
       el.setAttribute("aria-disabled", "true");
     }
 
+    const dateHtml = festival.date
+      ? `<time class="festival-card__date" datetime="${formatDateForDatetime(festival.date)}">${festival.date}</time>`
+      : "";
+
     el.innerHTML = `
       <span class="festival-card__emoji" aria-hidden="true">${festival.emoji}</span>
       <h2 class="festival-card__title">${festival.title}</h2>
       <p class="festival-card__tagline">${festival.tagline}</p>
-      <span class="festival-card__badge">${isReady ? "View" : "Soon"}</span>
+      <div class="festival-card__footer">
+        <span class="festival-card__badge">${isReady ? "View" : "Soon"}</span>
+        ${dateHtml}
+      </div>
     `;
 
     return el;
