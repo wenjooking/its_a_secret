@@ -177,7 +177,7 @@
   function clearNewIndicators(id) {
     document
       .querySelectorAll(
-        `.festival-card[data-festival-id="${id}"] .festival-card__new-dot, .timeline__item[data-festival-id="${id}"] .timeline__new-dot`
+        `.festival-card-wrap[data-festival-id="${id}"] .festival-card__new-dot, .timeline__item[data-festival-id="${id}"] .timeline__new-dot`
       )
       .forEach((el) => el.remove());
   }
@@ -243,9 +243,13 @@
   function createCard(festival) {
     const isReady = festival.status === "ready";
     const showNew = isNew(festival);
+
+    const wrap = document.createElement("div");
+    wrap.className = "festival-card-wrap";
+    wrap.dataset.festivalId = festival.id;
+
     const el = document.createElement(isReady ? "a" : "article");
     el.className = `festival-card${isReady ? "" : " festival-card--soon"}`;
-    el.dataset.festivalId = festival.id;
 
     if (isReady) {
       el.href = festivalHref(festival.id);
@@ -263,7 +267,18 @@
     el.innerHTML = `
       <div class="festival-card__top">
         <span class="festival-card__emoji" aria-hidden="true">${festival.emoji}</span>
-        ${dateHtml}
+        <div class="festival-card__top-end">
+          ${dateHtml}
+          <div class="festival-card__menu-wrap" data-festival-id="${festival.id}">
+            <button type="button" class="festival-card__menu-btn" aria-label="Moment options" title="Options" aria-expanded="false">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <circle cx="12" cy="5" r="1.75"/>
+                <circle cx="12" cy="12" r="1.75"/>
+                <circle cx="12" cy="19" r="1.75"/>
+              </svg>
+            </button>
+          </div>
+        </div>
       </div>
       <h3 class="festival-card__title-row">
         <span class="festival-card__title">${festival.title}</span>
@@ -279,16 +294,18 @@
 
     if (isReady) {
       el.addEventListener("click", async (e) => {
+        if (e.target.closest(".festival-card__menu-wrap")) return;
         e.preventDefault();
         const href = el.href;
         markOpened(festival);
         const count = await window.CoupleApp.views.record(festival.id);
-        updateCardViews(el, festival.id, count);
+        updateCardViews(wrap, festival.id, count);
         window.location.href = href;
       });
     }
 
-    return el;
+    wrap.appendChild(el);
+    return wrap;
   }
 
   function scrollTimelineToNext(nextFestivalId) {
@@ -326,6 +343,7 @@
 
     grid.replaceChildren();
     data.festivals.forEach((f) => grid.appendChild(createCard(f)));
+    window.CoupleApp.cardEditor?.attachCardMenus();
   }
 
   async function init() {
@@ -337,6 +355,7 @@
       renderPage(data);
 
       window.CoupleApp.timelineEditor?.bind(data, renderPage);
+      window.CoupleApp.cardEditor?.bind(data, renderPage);
     } catch {
       siteSubtitle.textContent = "Could not load moments. Refresh to try again.";
     }

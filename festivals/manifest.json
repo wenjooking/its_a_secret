@@ -5,42 +5,40 @@
     {
       "id": "valentine",
       "title": "First Letter",
-      "author": "Wen Joo",
       "tagline": "Our first day together...",
       "emoji": "♡",
-      "date": "26/04/2026",
       "updatedAt": "2026-05-28",
-      "status": "ready"
+      "date": "26/04/2026",
+      "author": "Wen Joo"
     },
     {
       "id": "birthday",
       "title": "Happy Birthday",
       "tagline": "Your day, your surprise",
       "emoji": "🎂",
-      "date": "01/01/2027",
       "updatedAt": "2026-05-28",
-      "status": "coming-soon"
+      "date": "01/01/2027"
     }
   ],
   "festivals": [
     {
       "id": "valentine",
       "title": "First Letter",
-      "author": "Wen Joo",
       "tagline": "Our first day together...",
       "emoji": "♡",
-      "date": "26/04/2026",
+      "status": "ready",
       "updatedAt": "2026-05-28",
-      "status": "ready"
+      "date": "26/04/2026",
+      "author": "Wen Joo"
     },
     {
       "id": "birthday",
       "title": "Happy Birthday",
       "tagline": "Your day, your surprise",
       "emoji": "🎂",
-      "date": "01/01/2027",
+      "status": "coming-soon",
       "updatedAt": "2026-05-28",
-      "status": "coming-soon"
+      "date": "01/01/2027"
     }
   ]
 }

@@ -1,22 +1,22 @@
-/* Timeline add / edit — modal + per-row info popout */
+/* Moment card edit / delete — menu popout + modal */
 (function () {
-  const modal = document.getElementById("timelineEditorModal");
+  const modal = document.getElementById("cardEditorModal");
   if (!modal) return;
 
-  const form = document.getElementById("timelineEditorForm");
-  const titleEl = document.getElementById("timelineEditorTitle");
-  const titleInput = document.getElementById("festivalTitle");
-  const taglineInput = document.getElementById("festivalTagline");
-  const emojiInput = document.getElementById("festivalEmoji");
-  const dateInput = document.getElementById("festivalDate");
-  const authorInput = document.getElementById("festivalAuthor");
-  const errorEl = document.getElementById("timelineEditorError");
-  const saveBtn = document.getElementById("timelineEditorSave");
-  const openAddBtn = document.getElementById("timelineAddBtn");
-  const detailPopout = document.getElementById("timelineDetailPopout");
-  const popoutEditBtn = document.getElementById("timelinePopoutEdit");
-  const popoutDeleteBtn = document.getElementById("timelinePopoutDelete");
-  const popoutCancelBtn = document.getElementById("timelinePopoutCancel");
+  const form = document.getElementById("cardEditorForm");
+  const titleEl = document.getElementById("cardEditorTitle");
+  const titleInput = document.getElementById("cardTitle");
+  const taglineInput = document.getElementById("cardTagline");
+  const emojiInput = document.getElementById("cardEmoji");
+  const dateInput = document.getElementById("cardDate");
+  const authorInput = document.getElementById("cardAuthor");
+  const statusInput = document.getElementById("cardStatus");
+  const errorEl = document.getElementById("cardEditorError");
+  const saveBtn = document.getElementById("cardEditorSave");
+  const detailPopout = document.getElementById("cardDetailPopout");
+  const popoutEditBtn = document.getElementById("cardPopoutEdit");
+  const popoutDeleteBtn = document.getElementById("cardPopoutDelete");
+  const popoutCancelBtn = document.getElementById("cardPopoutCancel");
 
   let manifestData = null;
   let editingId = null;
@@ -43,7 +43,7 @@
     return new Date(year, month - 1, day);
   }
 
-  function formatTimelineDate(display) {
+  function formatCardDate(display) {
     const d = parseDisplayDate(display);
     if (!d) return display?.trim() || "—";
     return d.toLocaleDateString("en-GB", {
@@ -66,22 +66,28 @@
 
   function closeAllPopouts() {
     detailPopout?.classList.add("hidden");
-    document.querySelectorAll(".timeline__menu-btn").forEach((btn) => {
+    document.querySelectorAll(".festival-card__menu-btn").forEach((btn) => {
       btn.setAttribute("aria-expanded", "false");
     });
     openPopoutId = null;
   }
 
-  function fillPopout(popout, festival) {
-    popout.querySelector('[data-field="emoji"]').textContent =
+  function fillPopout(festival) {
+    if (!detailPopout) return;
+    detailPopout.querySelector('[data-field="emoji"]').textContent =
       festival.emoji || "✦";
-    popout.querySelector('[data-field="title"]').textContent =
+    detailPopout.querySelector('[data-field="title"]').textContent =
       festival.title || "—";
-    popout.querySelector('[data-field="tagline"]').textContent =
+    detailPopout.querySelector('[data-field="tagline"]').textContent =
       festival.tagline?.trim() || "—";
-    popout.querySelector('[data-field="date"]').textContent = festival.date
-      ? formatTimelineDate(festival.date)
+    detailPopout.querySelector('[data-field="date"]').textContent = festival.date
+      ? formatCardDate(festival.date)
       : "—";
+    const statusEl = detailPopout.querySelector('[data-field="status"]');
+    if (statusEl) {
+      statusEl.textContent =
+        festival.status === "ready" ? "Ready — opens moment" : "Coming soon";
+    }
   }
 
   function positionPopout(anchorBtn) {
@@ -99,7 +105,7 @@
       left = window.innerWidth - popoutWidth - 12;
     }
 
-    const popoutHeight = detailPopout.offsetHeight || 320;
+    const popoutHeight = detailPopout.offsetHeight || 340;
     if (top + popoutHeight > window.innerHeight - 12) {
       top = Math.max(12, rect.top - popoutHeight - gap);
     }
@@ -109,7 +115,7 @@
   }
 
   function openPopout(wrap, festival) {
-    const btn = wrap.querySelector(".timeline__menu-btn");
+    const btn = wrap.querySelector(".festival-card__menu-btn");
     if (!detailPopout) return;
 
     if (openPopoutId === festival.id) {
@@ -117,9 +123,9 @@
       return;
     }
 
-    window.CoupleApp.cardEditor?.closePopouts?.();
+    window.CoupleApp.timelineEditor?.closePopouts?.();
     closeAllPopouts();
-    fillPopout(detailPopout, festival);
+    fillPopout(festival);
     detailPopout.classList.remove("hidden");
     openPopoutId = festival.id;
     btn?.setAttribute("aria-expanded", "true");
@@ -127,16 +133,17 @@
     requestAnimationFrame(() => positionPopout(btn));
   }
 
-  function openModal(mode, festival) {
-    editingId = mode === "edit" ? festival?.id : null;
+  function openModal(festival) {
+    editingId = festival?.id || null;
     clearError();
 
-    titleEl.textContent = mode === "edit" ? "Edit timeline" : "Add to timeline";
+    titleEl.textContent = "Edit moment";
     titleInput.value = festival?.title || "";
     taglineInput.value = festival?.tagline || "";
     emojiInput.value = festival?.emoji || "✦";
     dateInput.value = festival?.date || "";
     authorInput.value = festival?.author || "";
+    statusInput.value = festival?.status === "ready" ? "ready" : "coming-soon";
 
     closeAllPopouts();
     modal.classList.remove("hidden");
@@ -152,7 +159,7 @@
     editingId = null;
   }
 
-  function getFestivalFromForm() {
+  function getCardFromForm() {
     const title = titleInput.value.trim();
     if (!title) return null;
 
@@ -160,7 +167,7 @@
     if (date && !/^\d{2}\/\d{2}\/\d{4}$/.test(date)) return null;
 
     const existing = editingId
-      ? manifestData.timeline.find((f) => f.id === editingId)
+      ? manifestData.festivals.find((f) => f.id === editingId)
       : null;
     const id = editingId || slugFromTitle(title);
 
@@ -169,7 +176,8 @@
       title,
       tagline: taglineInput.value.trim(),
       emoji: emojiInput.value.trim() || "✦",
-      updatedAt: todayIso(),
+      status: statusInput.value === "ready" ? "ready" : "coming-soon",
+      updatedAt: existing?.updatedAt || todayIso(),
     };
 
     if (date) item.date = date;
@@ -179,11 +187,11 @@
     return item;
   }
 
-  async function persistTimeline(timeline) {
+  async function persistFestivals(festivals) {
     const next = {
       ...manifestData,
-      timeline,
-      festivals: manifestData.festivals || [],
+      festivals,
+      timeline: manifestData.timeline || [],
     };
     const result = await window.CoupleApp.manifestStore.save(next);
     if (!result.ok) {
@@ -203,57 +211,49 @@
 
   async function handleSave() {
     clearError();
-    const item = getFestivalFromForm();
+    const item = getCardFromForm();
     if (!item) {
       showError("Add a title. Date must be DD/MM/YYYY (e.g. 26/04/2026).");
       return;
     }
 
-    let timeline = [...(manifestData.timeline || [])];
-
-    if (editingId) {
-      const idx = timeline.findIndex((f) => f.id === editingId);
-      if (idx === -1) {
-        showError("Timeline entry not found.");
-        return;
-      }
-      timeline[idx] = { ...timeline[idx], ...item, id: editingId };
-    } else {
-      if (timeline.some((f) => f.id === item.id)) {
-        showError("That timeline entry already exists. Try a different title.");
-        return;
-      }
-      timeline.push(item);
+    const festivals = [...(manifestData.festivals || [])];
+    const idx = festivals.findIndex((f) => f.id === editingId);
+    if (idx === -1) {
+      showError("Moment not found.");
+      return;
     }
 
+    festivals[idx] = { ...festivals[idx], ...item, id: editingId };
+
     saveBtn.disabled = true;
-    const saved = await persistTimeline(timeline);
+    const saved = await persistFestivals(festivals);
     saveBtn.disabled = false;
 
     if (!saved) return;
 
     closeModal();
     onSaved?.(saved);
-    window.CoupleApp.homeToast?.("Timeline saved");
+    window.CoupleApp.homeToast?.("Moment saved");
   }
 
-  async function deleteFestival(id) {
-    if (!confirm("Remove this from the timeline?")) return;
+  async function deleteCard(id) {
+    if (!confirm("Remove this moment card? The festival page file is not deleted.")) {
+      return;
+    }
 
-    const timeline = manifestData.timeline.filter((f) => f.id !== id);
-    const saved = await persistTimeline(timeline);
+    const festivals = manifestData.festivals.filter((f) => f.id !== id);
+    const saved = await persistFestivals(festivals);
     if (!saved) return;
 
     closeAllPopouts();
     onSaved?.(saved);
-    window.CoupleApp.homeToast?.("Removed from timeline");
+    window.CoupleApp.homeToast?.("Moment removed");
   }
 
-  openAddBtn?.addEventListener("click", () => openModal("add"));
-
-  document.getElementById("timelineEditorClose")?.addEventListener("click", closeModal);
-  document.getElementById("timelineEditorCancel")?.addEventListener("click", closeModal);
-  document.getElementById("timelineEditorBackdrop")?.addEventListener("click", closeModal);
+  document.getElementById("cardEditorClose")?.addEventListener("click", closeModal);
+  document.getElementById("cardEditorCancel")?.addEventListener("click", closeModal);
+  document.getElementById("cardEditorBackdrop")?.addEventListener("click", closeModal);
   form?.addEventListener("submit", (e) => {
     e.preventDefault();
     handleSave();
@@ -275,19 +275,17 @@
 
   popoutEditBtn?.addEventListener("click", (e) => {
     e.preventDefault();
-    const festival = manifestData?.timeline?.find((f) => f.id === openPopoutId);
-    if (festival) openModal("edit", festival);
+    const festival = manifestData?.festivals?.find((f) => f.id === openPopoutId);
+    if (festival) openModal(festival);
   });
 
   popoutDeleteBtn?.addEventListener("click", (e) => {
     e.preventDefault();
-    if (openPopoutId) deleteFestival(openPopoutId);
+    if (openPopoutId) deleteCard(openPopoutId);
   });
 
   document.addEventListener("click", (e) => {
     if (
-      e.target.closest(".timeline__menu-wrap") ||
-      e.target.closest("#timelineDetailPopout") ||
       e.target.closest(".festival-card__menu-wrap") ||
       e.target.closest("#cardDetailPopout")
     ) {
@@ -299,13 +297,13 @@
   window.addEventListener("resize", () => {
     if (!openPopoutId || detailPopout?.classList.contains("hidden")) return;
     const btn = document
-      .querySelector(`.timeline__menu-wrap[data-festival-id="${openPopoutId}"]`)
-      ?.querySelector(".timeline__menu-btn");
+      .querySelector(`.festival-card__menu-wrap[data-festival-id="${openPopoutId}"]`)
+      ?.querySelector(".festival-card__menu-btn");
     positionPopout(btn);
   });
 
   window.CoupleApp = window.CoupleApp || {};
-  window.CoupleApp.timelineEditor = {
+  window.CoupleApp.cardEditor = {
     bind(data, rerender) {
       manifestData = data;
       onSaved = rerender;
@@ -313,17 +311,17 @@
 
     closePopouts: closeAllPopouts,
 
-    attachRowMenus() {
-      document.querySelectorAll(".timeline__menu-wrap").forEach((wrap) => {
+    attachCardMenus() {
+      document.querySelectorAll(".festival-card__menu-wrap").forEach((wrap) => {
         if (wrap.dataset.menuBound) return;
         wrap.dataset.menuBound = "1";
 
-        wrap.querySelector(".timeline__menu-btn")?.addEventListener("click", (e) => {
+        wrap.querySelector(".festival-card__menu-btn")?.addEventListener("click", (e) => {
           e.preventDefault();
           e.stopPropagation();
 
           const id = wrap.dataset.festivalId;
-          const festival = manifestData.timeline.find((f) => f.id === id);
+          const festival = manifestData.festivals.find((f) => f.id === id);
           if (festival) openPopout(wrap, festival);
         });
       });

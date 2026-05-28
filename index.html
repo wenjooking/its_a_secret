@@ -96,6 +96,78 @@
     </div>
   </div>
 
+  <div class="timeline__popout timeline__popout--floating hidden" id="cardDetailPopout" role="dialog" aria-label="Moment details">
+    <dl class="timeline__popout-info">
+      <div class="timeline__popout-row">
+        <dt>Icon</dt>
+        <dd data-field="emoji"></dd>
+      </div>
+      <div class="timeline__popout-row">
+        <dt>Title</dt>
+        <dd data-field="title"></dd>
+      </div>
+      <div class="timeline__popout-row">
+        <dt>Description</dt>
+        <dd data-field="tagline"></dd>
+      </div>
+      <div class="timeline__popout-row">
+        <dt>Date</dt>
+        <dd data-field="date"></dd>
+      </div>
+      <div class="timeline__popout-row">
+        <dt>Status</dt>
+        <dd data-field="status"></dd>
+      </div>
+    </dl>
+    <div class="timeline__popout-actions">
+      <button type="button" class="timeline__popout-btn timeline__popout-btn--edit" id="cardPopoutEdit">Edit</button>
+      <button type="button" class="timeline__popout-btn timeline__popout-btn--delete" id="cardPopoutDelete">Delete</button>
+      <button type="button" class="timeline__popout-btn timeline__popout-btn--cancel" id="cardPopoutCancel">Cancel</button>
+    </div>
+  </div>
+
+  <div class="timeline-editor-modal hidden" id="cardEditorModal" role="dialog" aria-modal="true" aria-labelledby="cardEditorTitle" aria-hidden="true">
+    <button type="button" class="timeline-editor-modal__backdrop" id="cardEditorBackdrop" aria-label="Close"></button>
+    <div class="timeline-editor-modal__card">
+      <button type="button" class="passcode-modal__close" id="cardEditorClose" aria-label="Close">×</button>
+      <h2 class="passcode-modal__title" id="cardEditorTitle">Edit moment</h2>
+      <form id="cardEditorForm" class="timeline-editor-form">
+        <label class="login-label" for="cardTitle">Title</label>
+        <input class="timeline-editor-input" type="text" id="cardTitle" required maxlength="80" />
+
+        <label class="login-label" for="cardTagline">Description</label>
+        <input class="timeline-editor-input" type="text" id="cardTagline" maxlength="120" />
+
+        <div class="timeline-editor-form__row">
+          <div>
+            <label class="login-label" for="cardEmoji">Emoji</label>
+            <input class="timeline-editor-input timeline-editor-input--emoji" type="text" id="cardEmoji" maxlength="4" />
+          </div>
+          <div>
+            <label class="login-label" for="cardDate">Date</label>
+            <input class="timeline-editor-input" type="text" id="cardDate" placeholder="DD/MM/YYYY" maxlength="10" />
+          </div>
+        </div>
+
+        <label class="login-label" for="cardAuthor">Author (optional)</label>
+        <input class="timeline-editor-input" type="text" id="cardAuthor" maxlength="40" />
+
+        <label class="login-label" for="cardStatus">Status</label>
+        <select class="timeline-editor-input" id="cardStatus">
+          <option value="coming-soon">Coming soon</option>
+          <option value="ready">Ready — open moment</option>
+        </select>
+
+        <p class="settings-error hidden" id="cardEditorError" role="alert"></p>
+
+        <div class="passcode-modal__actions">
+          <button type="button" class="settings-btn settings-btn--secondary" id="cardEditorCancel">Cancel</button>
+          <button type="submit" class="settings-btn settings-btn--primary" id="cardEditorSave">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <div class="timeline-editor-modal hidden" id="timelineEditorModal" role="dialog" aria-modal="true" aria-labelledby="timelineEditorTitle" aria-hidden="true">
     <button type="button" class="timeline-editor-modal__backdrop" id="timelineEditorBackdrop" aria-label="Close"></button>
     <div class="timeline-editor-modal__card">
@@ -138,6 +210,7 @@
   <script src="js/views-store.js"></script>
   <script src="js/manifest-store.js"></script>
   <script src="js/timeline-editor.js"></script>
+  <script src="js/card-editor.js"></script>
   <script src="js/home.js"></script>
 </body>
 </html>
