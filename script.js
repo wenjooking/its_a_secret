@@ -9,19 +9,58 @@ const canvas = document.getElementById("fireworks");
 const ctx = canvas.getContext("2d");
 
 let started = false;
+let heart = null;
+let viewW = 0;
+let viewH = 0;
 
 // ===== 常量 =====
-const IMAGE_ENLARGE = 11;
 const HEART_COLOR = "#FF99CC";
+
+// ===== 视口（移动端地址栏 / 旋转） =====
+function setAppHeight() {
+  const height = window.visualViewport?.height ?? window.innerHeight;
+  document.documentElement.style.setProperty("--app-height", `${height}px`);
+}
+
+function getHeartScale() {
+  const minDim = Math.min(viewW, viewH);
+  return Math.max(5, Math.min(14, minDim * 0.0175));
+}
 
 // ===== 画布 =====
 function resizeCanvas() {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
+  const hero = canvas.parentElement;
+  viewW = hero?.clientWidth || window.innerWidth;
+  viewH = hero?.clientHeight || window.innerHeight;
+
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  canvas.width = Math.floor(viewW * dpr);
+  canvas.height = Math.floor(viewH * dpr);
+  canvas.style.width = `${viewW}px`;
+  canvas.style.height = `${viewH}px`;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 }
 
-resizeCanvas();
-window.addEventListener("resize", resizeCanvas);
+function onViewportChange() {
+  setAppHeight();
+  resizeCanvas();
+  if (started && heart) {
+    createBackgroundParticles();
+    heart = new Heart();
+  }
+}
+
+function initViewport() {
+  setAppHeight();
+  resizeCanvas();
+}
+
+initViewport();
+window.addEventListener("load", initViewport);
+window.addEventListener("resize", onViewportChange);
+window.addEventListener("orientationchange", onViewportChange);
+window.visualViewport?.addEventListener("resize", onViewportChange);
+window.visualViewport?.addEventListener("scroll", onViewportChange);
 
 // ===== 工具函数 =====
 function rand(min, max) {
@@ -41,8 +80,8 @@ function createBackgroundParticles() {
 
   for (let i = 0; i < 120; i++) {
     bgParticles.push({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
+      x: Math.random() * viewW,
+      y: Math.random() * viewH,
       size: Math.random() * 1.5 + 0.4,
       alpha: Math.random() * 0.6 + 0.2,
       speed: Math.random() * 0.3 + 0.05,
@@ -56,9 +95,9 @@ function drawBackgroundParticles() {
     p.y += p.speed;
     p.flicker += 0.04;
 
-    if (p.y > canvas.height) {
+    if (p.y > viewH) {
       p.y = 0;
-      p.x = Math.random() * canvas.width;
+      p.x = Math.random() * viewW;
     }
 
     const glow = p.alpha + Math.sin(p.flicker) * 0.25;
@@ -75,7 +114,7 @@ function drawBackgroundParticles() {
 }
 
 // ===== Python 爱心逻辑 =====
-function heart_function(t, shrink_ratio = IMAGE_ENLARGE) {
+function heart_function(t, shrink_ratio = getHeartScale()) {
   let x = 16 * Math.pow(Math.sin(t), 3);
   let y = -(
     13 * Math.cos(t) -
@@ -87,15 +126,15 @@ function heart_function(t, shrink_ratio = IMAGE_ENLARGE) {
   x *= shrink_ratio;
   y *= shrink_ratio;
 
-  x += canvas.width / 2;
-  y += canvas.height / 2;
+  x += viewW / 2;
+  y += viewH / 2;
 
   return [Math.floor(x), Math.floor(y)];
 }
 
 function scatter_inside(x, y, beta = 0.15) {
-  const cx = canvas.width / 2;
-  const cy = canvas.height / 2;
+  const cx = viewW / 2;
+  const cy = viewH / 2;
 
   const ratio_x = -beta * Math.log(Math.random());
   const ratio_y = -beta * Math.log(Math.random());
@@ -107,8 +146,8 @@ function scatter_inside(x, y, beta = 0.15) {
 }
 
 function shrink(x, y, ratio) {
-  const cx = canvas.width / 2;
-  const cy = canvas.height / 2;
+  const cx = viewW / 2;
+  const cy = viewH / 2;
 
   const force =
     -1 / Math.pow((x - cx) ** 2 + (y - cy) ** 2, 0.6);
@@ -124,8 +163,8 @@ function curve(p) {
 }
 
 function calc_position(x, y, ratio) {
-  const cx = canvas.width / 2;
-  const cy = canvas.height / 2;
+  const cx = viewW / 2;
+  const cy = viewH / 2;
 
   const force =
     1 / Math.pow((x - cx) ** 2 + (y - cy) ** 2, 0.52);
@@ -202,7 +241,7 @@ class Heart {
 
     for (let i = 0; i < halo_number; i++) {
       const t = Math.random() * 2 * Math.PI;
-      let [x, y] = heart_function(t, 11.6);
+      let [x, y] = heart_function(t, getHeartScale() * 1.05);
       [x, y] = shrink(x, y, halo_radius);
 
       const k = this.key(x, y);
@@ -240,7 +279,7 @@ class Heart {
   }
 
   render(frame) {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.clearRect(0, 0, viewW, viewH);
 
     drawBackgroundParticles();
 
@@ -257,8 +296,8 @@ class Heart {
 
     const glow = 0.85 + Math.sin(time * 1.8) * 0.15;
 
-    const cx = canvas.width / 2;
-    const cy = canvas.height / 2;
+    const cx = viewW / 2;
+    const cy = viewH / 2;
 
     ctx.fillStyle = HEART_COLOR;
 
@@ -279,8 +318,6 @@ class Heart {
 }
 
 // ===== 动画 =====
-let heart;
-
 function draw(frame = 0) {
   heart.render(frame);
 
@@ -312,7 +349,8 @@ noBtn.addEventListener("click", () => {
 const letters = document.querySelectorAll(".letter");
 
 function revealLetters() {
-  const trigger = window.innerHeight * 0.85;
+  const vh = window.visualViewport?.height ?? window.innerHeight;
+  const trigger = vh * 0.85;
 
   letters.forEach((el) => {
     if (el.getBoundingClientRect().top < trigger) {
@@ -321,4 +359,5 @@ function revealLetters() {
   });
 }
 
-window.addEventListener("scroll", revealLetters);
+window.addEventListener("scroll", revealLetters, { passive: true });
+revealLetters();
