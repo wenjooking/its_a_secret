@@ -50,11 +50,34 @@
   let autoLayoutPersistTimer = null;
   let layoutPersistAttempts = 0;
   let dragMoved = false;
-
   const BOARD_PAD = 12;
   const BOARD_GAP = 18;
   const NOTE_WIDTH = 220;
   const DRAG_THRESHOLD = 6;
+  const MAX_VISIBLE_NOTES = 20;
+  const MOTION_TYPES = [
+    "motion-float-y",
+    "motion-float-x",
+    "motion-wiggle",
+    "motion-drift",
+    "motion-sway",
+  ];
+
+  function sortNotesNewest(list) {
+    return [...list].sort(
+      (a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt)
+    );
+  }
+
+  function getVisibleNotes(list) {
+    return sortNotesNewest(list).slice(0, MAX_VISIBLE_NOTES);
+  }
+
+  function updateBoardHint() {
+    if (!boardHintEl) return;
+    boardHintEl.innerHTML =
+      "Drag notes anywhere on the board.<br>Only the newest 20 notes are shown.";
+  }
   const NOTE_TILTS = [-2.4, -1.5, -0.7, 0.6, 1.2, 1.9, -1.1, 2.2, -1.8, 0.9];
 
   function hasSavedPosition(note) {
@@ -86,6 +109,24 @@
 
   function applyNoteTilt(card, note, index = 0) {
     card.style.setProperty("--note-tilt", `${noteTiltDeg(note, index)}deg`);
+  }
+
+  function clearNoteCardMotion(card) {
+    MOTION_TYPES.forEach((type) => card.classList.remove(`note-card--${type}`));
+    card.classList.remove("note-card--motion-active");
+  }
+
+  function applyNoteMotion(card, note, index = 0) {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    let h = 0;
+    const id = note.id || "";
+    for (let i = 0; i < id.length; i += 1) {
+      h = (h * 31 + id.charCodeAt(i)) | 0;
+    }
+    const type = MOTION_TYPES[Math.abs(h + index * 5) % MOTION_TYPES.length];
+    card.classList.add(`note-card--${type}`, "note-card--motion-active");
+    card.style.setProperty("--motion-delay", `${(Math.abs(h) % 20) / 10}s`);
   }
 
   function boardColumnWidth() {
@@ -324,6 +365,7 @@
       originLeft = parseFloat(card.style.left) || 0;
       originTop = parseFloat(card.style.top) || 0;
 
+      clearNoteCardMotion(card);
       card.setPointerCapture(e.pointerId);
       card.classList.add("note-card--dragging");
       card.addEventListener("pointermove", onPointerMove);
@@ -604,11 +646,13 @@
   function renderNotes() {
     layoutPersistAttempts = 0;
     grid.replaceChildren();
-    const hasNotes = notes.length > 0;
+    const visibleNotes = getVisibleNotes(notes);
+    const hasNotes = visibleNotes.length > 0;
     emptyEl?.classList.toggle("hidden", hasNotes);
     boardHintEl?.classList.toggle("hidden", !hasNotes);
+    if (hasNotes) updateBoardHint();
 
-    notes.forEach((note, index) => {
+    visibleNotes.forEach((note, index) => {
       const color = noteColorId(note);
       const card = document.createElement("article");
       card.className = `note-card note-card--${color}`;
@@ -676,6 +720,7 @@
       });
 
       applyNoteTilt(card, note, index);
+      applyNoteMotion(card, note, index);
       attachNoteDrag(card, note);
       grid.appendChild(card);
     });
@@ -684,12 +729,13 @@
   }
 
   async function persist(nextNotes) {
-    const result = await window.CoupleApp.notesStore.save(nextNotes);
+    const trimmed = getVisibleNotes(nextNotes);
+    const result = await window.CoupleApp.notesStore.save(trimmed);
     if (!result.ok) {
       showError(result.error);
       return false;
     }
-    notes = result.notes || nextNotes;
+    notes = getVisibleNotes(result.notes || trimmed);
     if (result.message) showToast(result.message);
     return true;
   }
@@ -879,12 +925,13 @@
     try {
       await PINS?.loadCustomPins?.();
       const loaded = await window.CoupleApp.notesStore.load();
-      notes = (loaded.notes || []).sort(
-        (a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt)
-      );
+      const loadedNotes = loaded.notes || [];
+      notes = getVisibleNotes(loadedNotes);
       NOTES_SEEN?.bootstrapExisting?.(notes);
       renderNotes();
-      if (loaded.syncLayoutToServer && notes.length) {
+      if (loadedNotes.length > MAX_VISIBLE_NOTES) {
+        await persist(notes);
+      } else if (loaded.syncLayoutToServer && notes.length) {
         await persistBoardLayoutFromDom();
       }
     } catch {

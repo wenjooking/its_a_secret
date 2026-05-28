@@ -2091,7 +2091,8 @@ body.timeline-editor-open {
 .notes-board-hint {
   margin: 0 0 12px;
   font-size: 0.82rem;
-  color: var(--muted);
+  line-height: 1.45;
+  color: var(--text-muted);
   text-align: center;
 }
 
@@ -2164,10 +2165,106 @@ body.timeline-editor-open {
   z-index: 40;
   touch-action: none;
   transition: none;
+  animation: none;
   transform: rotate(var(--note-tilt, -1deg)) scale(1.02);
   box-shadow:
     0 6px 16px rgba(0, 0, 0, 0.18),
     0 16px 40px rgba(0, 0, 0, 0.12);
+}
+
+.note-card--motion-active.note-card--motion-float-y {
+  animation: note-float-y 4s ease-in-out infinite;
+  animation-delay: var(--motion-delay, 0s);
+}
+
+.note-card--motion-active.note-card--motion-float-x {
+  animation: note-float-x 4.5s ease-in-out infinite;
+  animation-delay: var(--motion-delay, 0s);
+}
+
+.note-card--motion-active.note-card--motion-wiggle {
+  animation: note-wiggle 3.6s ease-in-out infinite;
+  animation-delay: var(--motion-delay, 0s);
+}
+
+.note-card--motion-active.note-card--motion-drift {
+  animation: note-drift 5s ease-in-out infinite;
+  animation-delay: var(--motion-delay, 0s);
+}
+
+.note-card--motion-active.note-card--motion-sway {
+  animation: note-sway 4.2s ease-in-out infinite;
+  animation-delay: var(--motion-delay, 0s);
+}
+
+@keyframes note-float-y {
+  0%,
+  100% {
+    transform: rotate(var(--note-tilt, -1deg)) translate(0, 0);
+  }
+  50% {
+    transform: rotate(var(--note-tilt, -1deg)) translate(0, -7px);
+  }
+}
+
+@keyframes note-float-x {
+  0%,
+  100% {
+    transform: rotate(var(--note-tilt, -1deg)) translate(0, 0);
+  }
+  50% {
+    transform: rotate(var(--note-tilt, -1deg)) translate(7px, 0);
+  }
+}
+
+@keyframes note-wiggle {
+  0%,
+  100% {
+    transform: rotate(var(--note-tilt, -1deg)) translate(0, 0);
+  }
+  25% {
+    transform: rotate(calc(var(--note-tilt, -1deg) + 1.1deg)) translate(2px, -4px);
+  }
+  75% {
+    transform: rotate(calc(var(--note-tilt, -1deg) - 1deg)) translate(-2px, 4px);
+  }
+}
+
+@keyframes note-drift {
+  0%,
+  100% {
+    transform: rotate(var(--note-tilt, -1deg)) translate(0, 0);
+  }
+  33% {
+    transform: rotate(var(--note-tilt, -1deg)) translate(5px, -5px);
+  }
+  66% {
+    transform: rotate(var(--note-tilt, -1deg)) translate(-5px, 4px);
+  }
+}
+
+@keyframes note-sway {
+  0%,
+  100% {
+    transform: rotate(var(--note-tilt, -1deg)) translate(0, 0);
+  }
+  35% {
+    transform: rotate(calc(var(--note-tilt, -1deg) + 0.8deg)) translate(-4px, -3px);
+  }
+  70% {
+    transform: rotate(calc(var(--note-tilt, -1deg) - 0.8deg)) translate(4px, 5px);
+  }
+}
+
+.note-card--motion-active:hover:not(.note-card--dragging) {
+  animation-play-state: paused;
+  transform: rotate(var(--note-tilt, -1deg)) translateY(-4px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .note-card--motion-active {
+    animation: none;
+  }
 }
 
 .note-card--pink {

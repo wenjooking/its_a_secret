@@ -38,6 +38,7 @@ const NOTE_FONTS = new Set([
   "zcool-xiaowei",
 ]);
 const NOTE_PINS = new Set(["red", "gold", "blue", "pink", "green", "silver"]);
+const MAX_NOTES = 20;
 const MAX_NOTE_IMAGE_BYTES = 3 * 1024 * 1024;
 
 function hashPasscode(passcode) {
@@ -335,13 +336,14 @@ app.put("/api/notes", (req, res) => {
   }
 
   cleaned.sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt));
+  const kept = cleaned.slice(0, MAX_NOTES);
 
   try {
-    writeNotes(cleaned);
+    writeNotes(kept);
     previous
-      .filter((p) => !cleaned.some((c) => c.id === p.id))
+      .filter((p) => !kept.some((c) => c.id === p.id))
       .forEach((n) => deleteNoteImage(n.image));
-    res.json({ ok: true, notes: cleaned });
+    res.json({ ok: true, notes: kept });
   } catch {
     res.status(500).json({ error: "Could not save notes." });
   }
