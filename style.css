@@ -2052,6 +2052,169 @@ body.timeline-editor-open {
   background: linear-gradient(160deg, #f0e4ff, #c9a8ff);
 }
 
+.notes-mode-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.notes-mode-tab {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: transparent;
+  color: var(--text-muted);
+  font-family: var(--font);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+
+.notes-mode-tab.is-active {
+  color: var(--text);
+  border-color: var(--theme-accent);
+  background: rgba(255, 107, 157, 0.1);
+}
+
+.notes-tab-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.notes-draw-field {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.notes-draw-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.notes-draw-tool {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  color: var(--theme-accent);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.notes-draw-tool svg {
+  width: 20px;
+  height: 20px;
+}
+
+.notes-draw-tool.is-active {
+  border-color: var(--theme-accent);
+  background: rgba(255, 107, 157, 0.12);
+  color: var(--theme-accent);
+}
+
+.notes-draw-color-wrap {
+  display: flex;
+  align-items: center;
+}
+
+.notes-draw-color-wrap.is-disabled {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.notes-draw-color-wheel-label {
+  display: block;
+  margin: 0;
+  cursor: pointer;
+}
+
+.notes-draw-color-wheel {
+  width: 40px;
+  height: 40px;
+  padding: 2px;
+  border: 2px solid var(--border);
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+}
+
+.notes-draw-color-wheel::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.notes-draw-color-wheel::-webkit-color-swatch {
+  border: none;
+  border-radius: 50%;
+}
+
+.notes-draw-size-label {
+  flex: 1;
+  min-width: 88px;
+  margin: 0;
+}
+
+.notes-draw-size {
+  width: 100%;
+  accent-color: var(--theme-accent);
+}
+
+.notes-draw-clear {
+  flex-shrink: 0;
+  padding: 8px 12px;
+  font-size: 0.82rem;
+}
+
+#noteAddModal .timeline-editor-modal__card,
+#noteEditModal .timeline-editor-modal__card {
+  max-width: 480px;
+  max-height: min(92vh, 760px);
+}
+
+.notes-draw-canvas-wrap {
+  width: 100%;
+  height: min(42vh, 280px);
+  min-height: 220px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  background-color: var(--surface);
+  background-image: repeating-conic-gradient(
+      rgba(127, 127, 127, 0.14) 0% 25%,
+      transparent 0% 50%
+    )
+    50% / 14px 14px;
+  overflow: hidden;
+  touch-action: none;
+}
+
+.notes-draw-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: crosshair;
+  touch-action: none;
+}
+
+.notes-draw-canvas--eraser {
+  cursor: cell;
+}
+
 .notes-image-field__actions {
   display: flex;
   flex-wrap: wrap;
@@ -2391,6 +2554,17 @@ body.timeline-editor-open {
   text-align: center;
 }
 
+.note-card__body {
+  line-height: 1.35;
+  margin: 0 0 8px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.note-card__body:only-of-type {
+  margin-bottom: 0;
+}
+
 .note-card__image {
   display: block;
   width: 100%;
@@ -2400,16 +2574,13 @@ body.timeline-editor-open {
   margin: 0 0 10px;
 }
 
-.note-card__body {
-  line-height: 1.35;
-  margin: 0 0 10px;
-  white-space: pre-wrap;
-  word-break: break-word;
+.note-card__body + .note-card__image {
+  margin-top: 4px;
 }
 
-.note-card__body:only-of-type,
-.note-card__image + .note-card__body {
-  margin-top: 0;
+.note-card__drawing {
+  object-fit: contain;
+  background: transparent;
 }
 
 .note-card__meta {

@@ -38,8 +38,11 @@
   const COLOR = window.CoupleApp.noteColors;
   const FONT = window.CoupleApp.noteFonts;
   const PINS = window.CoupleApp.notePins;
+  const DRAW = window.CoupleApp.noteDraw;
   const NOTES_SEEN = window.CoupleApp.notesSeen;
   let notes = [];
+  let composePad = null;
+  let editPad = null;
   let pendingImageDataUrl = null;
   let openPopoutId = null;
   let editingId = null;
@@ -407,7 +410,10 @@
     );
     renderFontSelect(composeFontSelect, FONT.defaultId, bodyInput);
     clearComposeImage();
+    composePad?.clear();
     if (bodyInput) bodyInput.value = "";
+    setComposeTab?.("writing");
+    requestAnimationFrame(() => composePad?.resize());
 
     addModal.classList.remove("hidden");
     addModal.setAttribute("aria-hidden", "false");
@@ -509,7 +515,7 @@
     });
   }
 
-  function clearComposeImage() {
+  function clearComposePhoto() {
     pendingImageDataUrl = null;
     if (imageInput) imageInput.value = "";
     imagePreview?.classList.add("hidden");
@@ -520,7 +526,13 @@
     imageClearBtn?.classList.add("hidden");
   }
 
+  function clearComposeImage() {
+    clearComposePhoto();
+    composePad?.clear();
+  }
+
   function setComposeImagePreview(dataUrl, name) {
+    composePad?.clear();
     pendingImageDataUrl = dataUrl;
     if (imagePreviewImg) {
       imagePreviewImg.src = dataUrl;
@@ -530,7 +542,7 @@
     imageClearBtn?.classList.remove("hidden");
   }
 
-  function clearEditImageState() {
+  function clearEditPhoto() {
     editPendingImageDataUrl = null;
     editRemoveImage = false;
     if (editImageInput) editImageInput.value = "";
@@ -540,6 +552,99 @@
       editImagePreviewImg.alt = "";
     }
     editImageClearBtn?.classList.add("hidden");
+  }
+
+  function clearEditImageState() {
+    clearEditPhoto();
+    editPad?.clear();
+  }
+
+  function getComposeImageDataUrl() {
+    if (composePad?.hasContent()) return composePad.toDataURL();
+    return pendingImageDataUrl;
+  }
+
+  function getEditImageDataUrl(existing) {
+    if (editPad?.hasContent()) return editPad.toDataURL();
+    if (editPendingImageDataUrl) return editPendingImageDataUrl;
+    if (existing?.image && !editRemoveImage) return null;
+    return null;
+  }
+
+  function noteWillHaveImage({ compose, existing }) {
+    if (compose) return Boolean(getComposeImageDataUrl());
+    if (editPad?.hasContent()) return true;
+    if (editPendingImageDataUrl) return true;
+    return Boolean(existing?.image && !editRemoveImage);
+  }
+
+  let setComposeTab = null;
+  let setEditTab = null;
+
+  function initNoteTabs(prefix) {
+    const writingTab = document.getElementById(`${prefix}TabWriting`);
+    const drawingTab = document.getElementById(`${prefix}TabDrawing`);
+    const writingPanel = document.getElementById(`${prefix}PanelWriting`);
+    const drawingPanel = document.getElementById(`${prefix}PanelDrawing`);
+    if (!writingTab || !drawingTab || !writingPanel || !drawingPanel) {
+      return null;
+    }
+
+    const show = (mode) => {
+      const isWriting = mode === "writing";
+      writingTab.classList.toggle("is-active", isWriting);
+      drawingTab.classList.toggle("is-active", !isWriting);
+      writingTab.setAttribute("aria-selected", String(isWriting));
+      drawingTab.setAttribute("aria-selected", String(!isWriting));
+      writingPanel.classList.toggle("hidden", !isWriting);
+      drawingPanel.classList.toggle("hidden", isWriting);
+      writingPanel.hidden = !isWriting;
+      drawingPanel.hidden = isWriting;
+      if (!isWriting) {
+        const pad = prefix === "compose" ? composePad : editPad;
+        requestAnimationFrame(() => pad?.resize());
+      }
+    };
+
+    writingTab.addEventListener("click", () => show("writing"));
+    drawingTab.addEventListener("click", () => show("drawing"));
+    return show;
+  }
+
+  function initDrawPads() {
+    if (!DRAW) return;
+
+    setComposeTab = initNoteTabs("compose");
+    setEditTab = initNoteTabs("edit");
+
+    const composeCanvas = document.getElementById("composeDrawCanvas");
+    if (composeCanvas && !composePad) {
+      composePad = DRAW.createPad(composeCanvas, {
+        onChange(hasContent) {
+          if (hasContent) clearComposePhoto();
+        },
+      });
+      DRAW.setupToolbar("compose", composePad);
+    }
+
+    const editCanvas = document.getElementById("editDrawCanvas");
+    if (editCanvas && !editPad) {
+      editPad = DRAW.createPad(editCanvas, {
+        onChange(hasContent) {
+          if (hasContent) {
+            editPendingImageDataUrl = null;
+            editRemoveImage = false;
+            clearEditPhoto();
+          }
+        },
+      });
+      DRAW.setupToolbar("edit", editPad, {
+        onClear() {
+          editRemoveImage = true;
+          clearEditPhoto();
+        },
+      });
+    }
   }
 
   function showEditImagePreview(src, name, showRemove) {
@@ -633,8 +738,13 @@
 
     clearEditImageState();
     if (note.image) {
-      showEditImagePreview(`assets/${note.image}`, "Current photo", true);
+      editPad?.loadImage(`assets/${note.image}`);
+    } else {
+      editPad?.clear();
     }
+    const startDrawing = Boolean(note.image && !note.body?.trim());
+    setEditTab?.(startDrawing ? "drawing" : "writing");
+    requestAnimationFrame(() => editPad?.resize());
 
     closeComposeModal();
     editModal?.classList.remove("hidden");
@@ -659,7 +769,7 @@
       card.dataset.noteId = note.id;
 
       const imageHtml = note.image
-        ? `<img class="note-card__image" src="assets/${note.image}" alt="" loading="lazy" />`
+        ? `<img class="note-card__image note-card__drawing" src="assets/${note.image}" alt="Drawing or photo on note" loading="lazy" />`
         : "";
 
       const bodyHtml = note.body ? `<p class="note-card__body"></p>` : "";
@@ -668,8 +778,8 @@
 
       card.innerHTML = `
         <span class="note-card__new-dot${showNewDot ? "" : " hidden"}" title="New note" aria-label="New note"></span>
-        ${imageHtml}
         ${bodyHtml}
+        ${imageHtml}
         <footer class="note-card__footer">
           <div class="note-card__meta">
             <span class="note-card__author"></span>
@@ -755,8 +865,9 @@
     clearError();
 
     const body = bodyInput.value.trim();
-    if (!body && !pendingImageDataUrl) {
-      showError("Write a message or add a photo.");
+    const imageDataUrl = getComposeImageDataUrl();
+    if (!body && !imageDataUrl) {
+      showError("Write a message, draw something, or add a photo.");
       return;
     }
     if (body.length > 500) {
@@ -783,10 +894,10 @@
     const submitBtn = form.querySelector('button[type="submit"]');
     submitBtn.disabled = true;
 
-    if (pendingImageDataUrl) {
+    if (imageDataUrl) {
       const uploaded = await window.CoupleApp.notesStore.uploadImage(
         noteId,
-        pendingImageDataUrl
+        imageDataUrl
       );
       if (!uploaded.ok) {
         submitBtn.disabled = false;
@@ -820,12 +931,10 @@
 
     const body = editBodyInput.value.trim();
     const existing = notes[idx];
-    const willHaveImage =
-      editPendingImageDataUrl ||
-      (existing.image && !editRemoveImage);
+    const willHaveImage = noteWillHaveImage({ compose: false, existing });
 
     if (!body && !willHaveImage) {
-      showError("Write a message or keep a photo.", editErrorEl);
+      showError("Write a message, draw something, or keep a photo.", editErrorEl);
       return;
     }
     if (body.length > 500) {
@@ -846,14 +955,16 @@
     const saveBtn = document.getElementById("noteEditSave");
     saveBtn.disabled = true;
 
-    if (editRemoveImage) {
+    const editImageDataUrl = getEditImageDataUrl(existing);
+
+    if (editRemoveImage && !editPad?.hasContent() && !editPendingImageDataUrl) {
       delete updated.image;
     }
 
-    if (editPendingImageDataUrl) {
+    if (editImageDataUrl) {
       const uploaded = await window.CoupleApp.notesStore.uploadImage(
         editingId,
-        editPendingImageDataUrl
+        editImageDataUrl
       );
       if (!uploaded.ok) {
         saveBtn.disabled = false;
@@ -921,6 +1032,8 @@
     if (authorHint && name) {
       authorHint.textContent = `Posting as ${name}`;
     }
+
+    initDrawPads();
 
     try {
       await PINS?.loadCustomPins?.();
@@ -1004,7 +1117,11 @@
 
     window.addEventListener("resize", () => {
       clearTimeout(resizeLayoutTimer);
-      resizeLayoutTimer = setTimeout(scheduleLayout, 120);
+      resizeLayoutTimer = setTimeout(() => {
+        composePad?.resize();
+        editPad?.resize();
+        scheduleLayout();
+      }, 120);
     });
 
     if (location.hash === "#homeNotes") {

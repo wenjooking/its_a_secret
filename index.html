@@ -233,33 +233,73 @@
       <button type="button" class="passcode-modal__close" id="noteAddClose" aria-label="Close">×</button>
       <h2 class="passcode-modal__title" id="noteAddTitle">Add note</h2>
       <form id="notesForm" class="timeline-editor-form notes-compose__form">
-        <label class="login-label" for="noteBody">Your note</label>
-        <textarea
-          class="notes-compose__input"
-          id="noteBody"
-          name="body"
-          rows="5"
-          maxlength="500"
-          placeholder="Write something sweet…"
-        ></textarea>
+        <div class="notes-mode-tabs" role="tablist" aria-label="Note type">
+          <button type="button" class="notes-mode-tab is-active" id="composeTabWriting" role="tab" aria-selected="true" aria-controls="composePanelWriting">Writing</button>
+          <button type="button" class="notes-mode-tab" id="composeTabDrawing" role="tab" aria-selected="false" aria-controls="composePanelDrawing">Drawing</button>
+        </div>
 
-        <label class="login-label" for="composeFontSelect">Font</label>
-        <select class="timeline-editor-input notes-font-select" id="composeFontSelect" aria-label="Note font"></select>
+        <div class="notes-tab-panel" id="composePanelWriting" role="tabpanel" aria-labelledby="composeTabWriting">
+          <label class="login-label" for="noteBody">Your note</label>
+          <textarea
+            class="notes-compose__input"
+            id="noteBody"
+            name="body"
+            rows="5"
+            maxlength="500"
+            placeholder="Write something sweet…"
+          ></textarea>
 
-        <fieldset class="notes-color-picker">
-          <legend class="login-label">Color</legend>
-          <div class="notes-color-picker__options" id="composeColorPicker" role="radiogroup" aria-label="Note color"></div>
-        </fieldset>
+          <label class="login-label" for="composeFontSelect">Font</label>
+          <select class="timeline-editor-input notes-font-select" id="composeFontSelect" aria-label="Note font"></select>
 
-        <div class="notes-image-field">
-          <label class="login-label" for="noteImage">Photo (optional)</label>
-          <input class="notes-image-field__input visually-hidden" type="file" id="noteImage" accept="image/jpeg,image/png,image/webp,image/gif" />
-          <div class="notes-image-field__actions">
-            <button type="button" class="settings-btn settings-btn--secondary" id="noteImagePick">Choose image</button>
-            <button type="button" class="settings-btn settings-btn--secondary hidden" id="noteImageClear">Remove</button>
+          <fieldset class="notes-color-picker">
+            <legend class="login-label">Color</legend>
+            <div class="notes-color-picker__options" id="composeColorPicker" role="radiogroup" aria-label="Note color"></div>
+          </fieldset>
+
+          <div class="notes-image-field">
+            <label class="login-label" for="noteImage">Photo</label>
+            <input class="notes-image-field__input visually-hidden" type="file" id="noteImage" accept="image/jpeg,image/png,image/webp,image/gif" />
+            <div class="notes-image-field__actions">
+              <button type="button" class="settings-btn settings-btn--secondary" id="noteImagePick">Choose image</button>
+              <button type="button" class="settings-btn settings-btn--secondary hidden" id="noteImageClear">Remove</button>
+            </div>
+            <div class="notes-image-preview hidden" id="noteImagePreview">
+              <img id="noteImagePreviewImg" alt="" />
+            </div>
           </div>
-          <div class="notes-image-preview hidden" id="noteImagePreview">
-            <img id="noteImagePreviewImg" alt="" />
+        </div>
+
+        <div class="notes-tab-panel hidden" id="composePanelDrawing" role="tabpanel" aria-labelledby="composeTabDrawing" hidden>
+          <div class="notes-draw-field">
+            <div class="notes-draw-toolbar">
+              <button type="button" class="notes-draw-tool is-active" id="composeDrawPencil" title="Pencil" aria-label="Pencil">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M12 20h9"/>
+                  <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/>
+                </svg>
+              </button>
+              <div class="notes-draw-color-wrap" id="composeDrawColorWrap">
+                <label class="notes-draw-color-wheel-label" for="composeDrawColor" title="Pick color">
+                  <input type="color" class="notes-draw-color-wheel" id="composeDrawColor" value="#2a2030" aria-label="Pen color" />
+                </label>
+              </div>
+              <button type="button" class="notes-draw-tool" id="composeDrawEraser" title="Eraser" aria-label="Eraser">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="m7 21-4-4 9-9 4 4Z"/>
+                  <path d="M20 8 16 4"/>
+                  <path d="m6 12 4 4"/>
+                </svg>
+              </button>
+              <label class="notes-draw-size-label">
+                <span class="visually-hidden">Brush size</span>
+                <input type="range" class="notes-draw-size" id="composeDrawSize" min="2" max="20" value="4" />
+              </label>
+              <button type="button" class="settings-btn settings-btn--secondary notes-draw-clear" id="composeDrawClear">Clear</button>
+            </div>
+            <div class="notes-draw-canvas-wrap">
+              <canvas id="composeDrawCanvas" class="notes-draw-canvas" aria-label="Drawing canvas"></canvas>
+            </div>
           </div>
         </div>
 
@@ -280,26 +320,66 @@
       <button type="button" class="passcode-modal__close" id="noteEditClose" aria-label="Close">×</button>
       <h2 class="passcode-modal__title" id="noteEditTitle">Edit note</h2>
       <form id="noteEditForm" class="timeline-editor-form">
-        <label class="login-label" for="editNoteBody">Your note</label>
-        <textarea class="notes-compose__input" id="editNoteBody" rows="5" maxlength="500"></textarea>
+        <div class="notes-mode-tabs" role="tablist" aria-label="Note type">
+          <button type="button" class="notes-mode-tab is-active" id="editTabWriting" role="tab" aria-selected="true" aria-controls="editPanelWriting">Writing</button>
+          <button type="button" class="notes-mode-tab" id="editTabDrawing" role="tab" aria-selected="false" aria-controls="editPanelDrawing">Drawing</button>
+        </div>
 
-        <label class="login-label" for="editFontSelect">Font</label>
-        <select class="timeline-editor-input notes-font-select" id="editFontSelect" aria-label="Note font"></select>
+        <div class="notes-tab-panel" id="editPanelWriting" role="tabpanel" aria-labelledby="editTabWriting">
+          <label class="login-label" for="editNoteBody">Your note</label>
+          <textarea class="notes-compose__input" id="editNoteBody" rows="5" maxlength="500"></textarea>
 
-        <fieldset class="notes-color-picker">
-          <legend class="login-label">Color</legend>
-          <div class="notes-color-picker__options" id="editColorPicker" role="radiogroup" aria-label="Note color"></div>
-        </fieldset>
+          <label class="login-label" for="editFontSelect">Font</label>
+          <select class="timeline-editor-input notes-font-select" id="editFontSelect" aria-label="Note font"></select>
 
-        <div class="notes-image-field">
-          <label class="login-label">Photo</label>
-          <div class="notes-image-field__actions">
-            <button type="button" class="settings-btn settings-btn--secondary" id="editNoteImagePick">Change image</button>
-            <button type="button" class="settings-btn settings-btn--secondary hidden" id="editNoteImageClear">Remove photo</button>
+          <fieldset class="notes-color-picker">
+            <legend class="login-label">Color</legend>
+            <div class="notes-color-picker__options" id="editColorPicker" role="radiogroup" aria-label="Note color"></div>
+          </fieldset>
+
+          <div class="notes-image-field">
+            <label class="login-label">Photo</label>
+            <div class="notes-image-field__actions">
+              <button type="button" class="settings-btn settings-btn--secondary" id="editNoteImagePick">Change image</button>
+              <button type="button" class="settings-btn settings-btn--secondary hidden" id="editNoteImageClear">Remove photo</button>
+            </div>
+            <input class="notes-image-field__input visually-hidden" type="file" id="editNoteImage" accept="image/jpeg,image/png,image/webp,image/gif" />
+            <div class="notes-image-preview hidden" id="editNoteImagePreview">
+              <img id="editNoteImagePreviewImg" alt="" />
+            </div>
           </div>
-          <input class="notes-image-field__input visually-hidden" type="file" id="editNoteImage" accept="image/jpeg,image/png,image/webp,image/gif" />
-          <div class="notes-image-preview hidden" id="editNoteImagePreview">
-            <img id="editNoteImagePreviewImg" alt="" />
+        </div>
+
+        <div class="notes-tab-panel hidden" id="editPanelDrawing" role="tabpanel" aria-labelledby="editTabDrawing" hidden>
+          <div class="notes-draw-field">
+            <div class="notes-draw-toolbar">
+              <button type="button" class="notes-draw-tool is-active" id="editDrawPencil" title="Pencil" aria-label="Pencil">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M12 20h9"/>
+                  <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/>
+                </svg>
+              </button>
+              <div class="notes-draw-color-wrap" id="editDrawColorWrap">
+                <label class="notes-draw-color-wheel-label" for="editDrawColor" title="Pick color">
+                  <input type="color" class="notes-draw-color-wheel" id="editDrawColor" value="#2a2030" aria-label="Pen color" />
+                </label>
+              </div>
+              <button type="button" class="notes-draw-tool" id="editDrawEraser" title="Eraser" aria-label="Eraser">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="m7 21-4-4 9-9 4 4Z"/>
+                  <path d="M20 8 16 4"/>
+                  <path d="m6 12 4 4"/>
+                </svg>
+              </button>
+              <label class="notes-draw-size-label">
+                <span class="visually-hidden">Brush size</span>
+                <input type="range" class="notes-draw-size" id="editDrawSize" min="2" max="20" value="4" />
+              </label>
+              <button type="button" class="settings-btn settings-btn--secondary" id="editDrawClear">Clear</button>
+            </div>
+            <div class="notes-draw-canvas-wrap">
+              <canvas id="editDrawCanvas" class="notes-draw-canvas" aria-label="Drawing canvas"></canvas>
+            </div>
           </div>
         </div>
 
@@ -322,6 +402,7 @@
   <script src="js/note-colors.js"></script>
   <script src="js/note-fonts.js"></script>
   <script src="js/note-pins.js"></script>
+  <script src="js/note-draw.js"></script>
   <script src="js/notes-store.js"></script>
   <script src="js/notes.js"></script>
   <script src="js/home.js"></script>
