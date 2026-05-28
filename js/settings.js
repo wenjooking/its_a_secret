@@ -3,8 +3,7 @@
   const SEEN_KEY = "couple_festival_seen";
 
   const userNameEl = document.getElementById("settingsUserName");
-  const themePickDark = document.getElementById("themePickDark");
-  const themePickLight = document.getElementById("themePickLight");
+  const userAvatarEl = document.getElementById("settingsUserAvatar");
   const musicAutoplay = document.getElementById("musicAutoplay");
   const resetNewBadges = document.getElementById("resetNewBadges");
   const toast = document.getElementById("settingsToast");
@@ -19,21 +18,15 @@
     toastTimer = setTimeout(() => toast.classList.add("hidden"), 2600);
   }
 
-  function syncThemeButtons() {
-    const theme = window.CoupleApp?.theme?.get() || "dark";
-    themePickDark?.classList.toggle("is-active", theme === "dark");
-    themePickLight?.classList.toggle("is-active", theme === "light");
-    themePickDark?.setAttribute("aria-pressed", theme === "dark" ? "true" : "false");
-    themePickLight?.setAttribute("aria-pressed", theme === "light" ? "true" : "false");
-  }
-
   function initProfile() {
     const name = window.CoupleApp?.auth?.getDisplayName?.() || "";
-    if (!userNameEl) return;
-    userNameEl.textContent = name || "—";
-    userNameEl.title = name
-      ? ""
-      : "Sign out and sign in again with your name on the login page";
+    if (userNameEl) {
+      userNameEl.textContent = name || "—";
+      userNameEl.title = name
+        ? ""
+        : "Sign out and sign in again with your name on the login page";
+    }
+    window.CoupleApp?.auth?.fillProfileBadge?.(userAvatarEl);
   }
 
   function initMusicToggle() {
@@ -42,18 +35,6 @@
     musicAutoplay.addEventListener("change", () => {
       localStorage.setItem(MUSIC_KEY, musicAutoplay.checked ? "1" : "0");
       showToast(musicAutoplay.checked ? "Music will autoplay" : "Music won’t autoplay");
-    });
-  }
-
-  function initThemePicker() {
-    syncThemeButtons();
-    themePickDark?.addEventListener("click", () => {
-      window.CoupleApp?.theme?.apply("dark");
-      syncThemeButtons();
-    });
-    themePickLight?.addEventListener("click", () => {
-      window.CoupleApp?.theme?.apply("light");
-      syncThemeButtons();
     });
   }
 
@@ -183,6 +164,5 @@
 
   initProfile();
   initMusicToggle();
-  initThemePicker();
   initPasscodeChange();
 })();

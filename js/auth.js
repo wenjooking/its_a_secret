@@ -2,6 +2,7 @@
 (function () {
   const STORAGE_KEY = "couple_auth";
   const NAME_KEY = "couple_user_name";
+  const USER_ID_KEY = "couple_user_id";
   const LOGIN_FILE = "login.html";
   const PASSCODE_LENGTH = 8;
 
@@ -49,6 +50,11 @@
     wenjoo: "Wen Joo",
   };
 
+  const PROFILE_ICONS = {
+    jolin: "🐰",
+    wenjoo: "🐻",
+  };
+
   function formatDisplayName(name) {
     const key = name.trim().toLowerCase();
     if (PROFILE_NAMES[key]) return PROFILE_NAMES[key];
@@ -58,8 +64,14 @@
   }
 
   function signIn(name) {
+    const key = (name || "").trim().toLowerCase();
     const displayName = formatDisplayName(name || "");
     sessionStorage.setItem(STORAGE_KEY, "1");
+    if (PROFILE_NAMES[key]) {
+      sessionStorage.setItem(USER_ID_KEY, key);
+    } else {
+      sessionStorage.removeItem(USER_ID_KEY);
+    }
     if (displayName) {
       sessionStorage.setItem(NAME_KEY, displayName);
     }
@@ -69,9 +81,42 @@
     return sessionStorage.getItem(NAME_KEY) || "";
   }
 
+  function getProfileId() {
+    const stored = sessionStorage.getItem(USER_ID_KEY);
+    if (stored && PROFILE_NAMES[stored]) return stored;
+    const display = getDisplayName();
+    for (const [id, label] of Object.entries(PROFILE_NAMES)) {
+      if (label === display) return id;
+    }
+    return "";
+  }
+
+  function getProfileIcon() {
+    const id = getProfileId();
+    return PROFILE_ICONS[id] || "";
+  }
+
+  function fillProfileBadge(el) {
+    if (!el) return;
+    const icon = getProfileIcon();
+    const name = getDisplayName();
+    el.textContent = icon;
+    el.classList.toggle("hidden", !icon);
+    if (icon) {
+      el.setAttribute("role", "img");
+      el.setAttribute("aria-label", name ? `${name} (${icon})` : icon);
+      el.removeAttribute("aria-hidden");
+    } else {
+      el.removeAttribute("role");
+      el.removeAttribute("aria-label");
+      el.setAttribute("aria-hidden", "true");
+    }
+  }
+
   function signOut() {
     sessionStorage.removeItem(STORAGE_KEY);
     sessionStorage.removeItem(NAME_KEY);
+    sessionStorage.removeItem(USER_ID_KEY);
     window.location.replace(loginPath());
   }
 
@@ -108,6 +153,9 @@
     signIn,
     signOut,
     getDisplayName,
+    getProfileId,
+    getProfileIcon,
+    fillProfileBadge,
     hashPassword,
     isValidPasscode,
     changePasscode,

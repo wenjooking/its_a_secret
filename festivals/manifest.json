@@ -13,11 +13,11 @@
     },
     {
       "id": "birthday",
-      "title": "Happy Birthday",
+      "title": "🐰小宝's 22nd Birthday",
       "tagline": "Your day, your surprise",
       "emoji": "🎂",
       "updatedAt": "2026-05-28",
-      "date": "01/01/2027"
+      "date": "28/08/2026"
     }
   ],
   "festivals": [
@@ -33,12 +33,12 @@
     },
     {
       "id": "birthday",
-      "title": "Happy Birthday",
+      "title": "🐰小宝's 22nd Birthday",
       "tagline": "Your day, your surprise",
       "emoji": "🎂",
       "status": "coming-soon",
       "updatedAt": "2026-05-28",
-      "date": "01/01/2027"
+      "date": "28/08/2026"
     }
   ]
 }

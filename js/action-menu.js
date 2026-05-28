@@ -4,10 +4,13 @@
   const toggle = document.getElementById("actionMenuToggle");
   if (!menu || !toggle) return;
 
+  const extras = menu.querySelector(".action-menu__extras");
+
   function setOpen(open) {
     menu.classList.toggle("action-menu--open", open);
     toggle.setAttribute("aria-expanded", open ? "true" : "false");
     toggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+    extras?.setAttribute("aria-hidden", open ? "false" : "true");
   }
 
   function close() {
@@ -35,4 +38,8 @@
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") close();
   });
+
+  window.CoupleApp?.auth?.fillProfileBadge?.(
+    document.getElementById("actionMenuProfile")
+  );
 })();

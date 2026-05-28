@@ -87,29 +87,30 @@ body {
   right: calc(16px + var(--safe-right));
   z-index: 9999;
   display: flex;
-  flex-direction: column-reverse;
+  flex-direction: column;
   align-items: center;
   gap: 10px;
+}
+
+.action-menu:not(.action-menu--open) .action-menu__extras {
+  display: none;
 }
 
 .action-menu__extras {
   display: flex;
-  flex-direction: column-reverse;
+  flex-direction: column;
   align-items: center;
   gap: 10px;
+  background: transparent;
 }
 
 .action-menu__extras .fab-btn {
-  opacity: 0;
-  transform: translateY(10px) scale(0.85);
+  transform: translateY(8px) scale(0.9);
   pointer-events: none;
-  transition:
-    opacity 0.28s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .action-menu--open .action-menu__extras .fab-btn {
-  opacity: 1;
   transform: translateY(0) scale(1);
   pointer-events: auto;
 }
@@ -122,8 +123,36 @@ body {
   transition-delay: 0.12s;
 }
 
+.action-menu:not(.action-menu--open) .action-menu__extras .fab-btn {
+  transition-delay: 0s;
+}
+
 .action-menu--login .fab-btn--settings {
   display: none;
+}
+
+.action-menu__profile {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  line-height: 1;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.35),
+    0 0 0 1px rgba(0, 0, 0, 0.08);
+  pointer-events: none;
+  user-select: none;
+}
+
+:root[data-theme="light"] .action-menu__profile {
+  background: rgba(0, 0, 0, 0.06);
+  border-color: rgba(0, 0, 0, 0.12);
 }
 
 .fab-btn,
@@ -1433,8 +1462,17 @@ a.festival-card .festival-card__badge {
 .settings-profile {
   padding: 18px 20px;
   display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.settings-profile__info {
+  display: flex;
   flex-direction: column;
   gap: 4px;
+  min-width: 0;
+  flex: 1;
 }
 
 .settings-profile__label {
@@ -1446,6 +1484,24 @@ a.festival-card .festival-card__badge {
   font-size: 1.2rem;
   font-weight: 600;
   letter-spacing: -0.02em;
+}
+
+.settings-profile__avatar {
+  flex-shrink: 0;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.65rem;
+  line-height: 1;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+:root[data-theme="light"] .settings-profile__avatar {
+  background: rgba(0, 0, 0, 0.04);
 }
 
 .settings-row {
@@ -1481,35 +1537,6 @@ a.festival-card .festival-card__badge {
   font-size: 0.8rem;
   color: var(--text-muted);
   line-height: 1.4;
-}
-
-.settings-segmented {
-  display: inline-flex;
-  padding: 3px;
-  border-radius: 999px;
-  border: 1px solid var(--border);
-  background: var(--page-bg);
-  flex-shrink: 0;
-}
-
-.settings-segmented__btn {
-  padding: 8px 14px;
-  border: none;
-  border-radius: 999px;
-  background: transparent;
-  color: var(--text-muted);
-  font-family: var(--font);
-  font-size: 0.82rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition:
-    background 0.2s ease,
-    color 0.2s ease;
-}
-
-.settings-segmented__btn.is-active {
-  background: var(--theme-accent);
-  color: #fff;
 }
 
 .settings-switch {
