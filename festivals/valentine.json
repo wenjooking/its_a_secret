@@ -1,0 +1,28 @@
+{
+  "id": "valentine",
+  "status": "ready",
+  "pageTitle": "For You ♡",
+  "theme": {
+    "heartColor": "#FF6B9D",
+    "accent": "#FF6B9D",
+    "glow": "rgba(255, 107, 157, 0.35)",
+    "background": "#0a0a0f",
+    "themeColor": "#0a0a0f"
+  },
+  "hero": {
+    "hint": "Scroll to read ↓"
+  },
+  "letter": {
+    "title": "A Letter For You",
+    "placeholder": null
+  },
+  "assets": {
+    "base": "assets",
+    "music": "song.mp3",
+    "images": [
+      { "src": "letter_1.png", "alt": "Letter page 1" },
+      { "src": "letter_2.png", "alt": "Letter page 2" }
+    ]
+  },
+  "credit": "Made with love · Wenjoo"
+}

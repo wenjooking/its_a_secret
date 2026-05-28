@@ -1,0 +1,34 @@
+{
+  "siteTitle": "For Us",
+  "siteSubtitle": "Tap a moment — heart, music, and your letter open right away.",
+  "festivals": [
+    {
+      "id": "valentine",
+      "title": "A Letter For You",
+      "tagline": "Something I made for you",
+      "emoji": "♡",
+      "status": "ready"
+    },
+    {
+      "id": "anniversary",
+      "title": "Our Anniversary",
+      "tagline": "Celebrate another year together",
+      "emoji": "✨",
+      "status": "coming-soon"
+    },
+    {
+      "id": "birthday",
+      "title": "Happy Birthday",
+      "tagline": "Your day, your surprise",
+      "emoji": "🎂",
+      "status": "coming-soon"
+    },
+    {
+      "id": "christmas",
+      "title": "Christmas",
+      "tagline": "Warm wishes for the holidays",
+      "emoji": "🎄",
+      "status": "coming-soon"
+    }
+  ]
+}

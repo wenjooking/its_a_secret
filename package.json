@@ -1,0 +1,17 @@
+{
+  "name": "its_a_secret",
+  "version": "1.0.0",
+  "description": "A personal letter site with animated heart",
+  "private": true,
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "build": "node scripts/build.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}

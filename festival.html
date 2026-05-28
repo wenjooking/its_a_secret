@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0a0a0f" />
+  <title>For You ♡</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="page-festival">
+
+  <a class="back-link" href="index.html" id="backLink">
+    <span class="back-link__icon" aria-hidden="true">←</span>
+    Moments
+  </a>
+
+  <section class="hero">
+    <canvas id="fireworks"></canvas>
+    <div class="hero-caption">
+      <p class="hero-caption__title" id="heroTitle"></p>
+      <p class="hint show" id="hint">Scroll to read ↓</p>
+    </div>
+  </section>
+
+  <section class="letter-section">
+    <p class="section-label">Your letter</p>
+    <h1 id="letterTitle">A Letter For You</h1>
+    <div class="letter" id="letterBlock"></div>
+    <p class="letter-placeholder hidden" id="letterPlaceholder"></p>
+  </section>
+
+  <footer class="credit" id="credit">Credit by Wenjoo</footer>
+
+  <audio id="music" preload="none"></audio>
+
+  <script src="js/viewport.js"></script>
+  <script src="js/heart.js"></script>
+  <script src="js/festival-page.js"></script>
+</body>
+</html>

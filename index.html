@@ -3,45 +3,31 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#000000" />
-  <title>For You ♡</title>
+  <meta name="theme-color" content="#0a0a0f" />
+  <title>For Us ♡</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
-<body>
+<body class="page-home">
 
-  <div class="intro-card" id="introCard">
-    <div class="card">
-      <h1>Are you ready?</h1>
-      <p>I made something for you.</p>
+  <div class="home-glow" aria-hidden="true"></div>
 
-      <div class="buttons">
-        <button id="yesBtn">Yes</button>
-        <button id="noBtn">No</button>
-      </div>
-    </div>
-  </div>
+  <header class="home-header">
+    <p class="home-eyebrow">Couple space</p>
+    <h1 id="siteTitle">For Us ♡</h1>
+    <p class="home-subtitle" id="siteSubtitle">Loading…</p>
+  </header>
 
-  <section class="hero">
-    <canvas id="fireworks"></canvas>
-    <p class="hint" id="hint">Scroll down slowly ↓</p>
-  </section>
+  <main class="home-main">
+    <section class="festival-grid" id="festivalGrid" aria-label="Choose a moment"></section>
+  </main>
 
-  <section class="letter-section">
-    <h1>A Letter For You</h1>
-
-    <div class="letter">
-      <img src="assets/letter_1.png" alt="Letter page 1" decoding="async" />
-      <img src="assets/letter_2.png" alt="Letter page 2" decoding="async" />
-    </div>
-  </section>
-
-  <footer class="credit">
-    Credit by Wenjoo
+  <footer class="credit home-credit">
+    Made with love · Wenjoo
   </footer>
 
-  <audio id="music" src="assets/song.mp3"></audio>
-
-  <script src="script.js"></script>
-
+  <script src="js/home.js"></script>
 </body>
 </html>

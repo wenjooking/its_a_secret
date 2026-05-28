@@ -1,0 +1,25 @@
+{
+  "id": "anniversary",
+  "status": "ready",
+  "pageTitle": "Our Anniversary ✨",
+  "theme": {
+    "heartColor": "#B794F6",
+    "accent": "#B794F6",
+    "glow": "rgba(183, 148, 246, 0.35)",
+    "background": "#08080f",
+    "themeColor": "#08080f"
+  },
+  "hero": {
+    "hint": "Scroll to read ↓"
+  },
+  "letter": {
+    "title": "For Our Anniversary",
+    "placeholder": "Add your letter images to assets/anniversary/ and list them in festivals/anniversary.json."
+  },
+  "assets": {
+    "base": "assets/anniversary",
+    "music": null,
+    "images": []
+  },
+  "credit": "Made with love · Wenjoo"
+}
