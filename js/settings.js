@@ -59,6 +59,7 @@
 
   resetNewBadges?.addEventListener("click", () => {
     localStorage.removeItem(SEEN_KEY);
+    window.CoupleApp?.notesSeen?.clear?.({ fromReset: true });
     showToast("“New” badges restored on this device");
   });
 

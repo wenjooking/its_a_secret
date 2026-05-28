@@ -1,0 +1,113 @@
+{
+  "notes": [
+    {
+      "id": "note-1779955834965",
+      "author": "Jolin",
+      "body": "ewjhbfkwef",
+      "createdAt": "2026-05-28T08:10:34.965Z",
+      "color": "coral",
+      "font": "caveat",
+      "x": 12,
+      "y": 627,
+      "rotation": 2,
+      "pin": "silver"
+    },
+    {
+      "id": "note-1779955774483",
+      "author": "Us",
+      "body": "fdsfsf",
+      "createdAt": "2026-05-28T08:09:34.483Z",
+      "color": "pink",
+      "font": "caveat",
+      "x": 12,
+      "y": 489,
+      "rotation": -1,
+      "pin": "green"
+    },
+    {
+      "id": "note-1779954494964",
+      "author": "Wen Joo",
+      "body": "fafsd",
+      "createdAt": "2026-05-28T07:48:14.965Z",
+      "color": "lavender",
+      "font": "caveat",
+      "x": 12,
+      "y": 30,
+      "rotation": 1,
+      "pin": "gold"
+    },
+    {
+      "id": "note-1779954492981",
+      "author": "Wen Joo",
+      "body": "fdafsf",
+      "createdAt": "2026-05-28T07:48:12.981Z",
+      "color": "pink",
+      "font": "caveat",
+      "x": 480,
+      "y": 110,
+      "rotation": 1,
+      "pin": "pink"
+    },
+    {
+      "id": "note-1779954491148",
+      "author": "Wen Joo",
+      "body": "olajb",
+      "createdAt": "2026-05-28T07:48:11.148Z",
+      "color": "cream",
+      "font": "caveat",
+      "x": 488,
+      "y": 30,
+      "rotation": 1,
+      "pin": "blue"
+    },
+    {
+      "id": "note-1779954246212",
+      "author": "Wen Joo",
+      "body": "happy bday",
+      "createdAt": "2026-05-28T07:44:06.212Z",
+      "color": "cream",
+      "font": "caveat",
+      "x": 12,
+      "y": 168,
+      "rotation": -1,
+      "pin": "pink"
+    },
+    {
+      "id": "note-1779954240595",
+      "author": "Wen Joo",
+      "body": "happy day",
+      "createdAt": "2026-05-28T07:44:00.595Z",
+      "color": "lavender",
+      "font": "caveat",
+      "x": 250,
+      "y": 168,
+      "rotation": -1,
+      "pin": "green"
+    },
+    {
+      "id": "note-1779954233462",
+      "author": "Wen Joo",
+      "body": "love u",
+      "createdAt": "2026-05-28T07:43:53.462Z",
+      "color": "blush",
+      "font": "caveat",
+      "x": 569,
+      "y": 222,
+      "rotation": -2,
+      "pin": "green"
+    },
+    {
+      "id": "note-1779954220448",
+      "author": "Wen Joo",
+      "body": "love ya",
+      "createdAt": "2026-05-28T07:43:40.448Z",
+      "color": "pink",
+      "font": "caveat",
+      "image": "notes/note-1779954220448.jpg",
+      "x": 134,
+      "y": 181,
+      "rotation": 2,
+      "pin": "pink"
+    }
+  ]
+}

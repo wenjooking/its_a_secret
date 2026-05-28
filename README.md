@@ -10,7 +10,8 @@ npm start
 ```
 
 - **Login:** http://localhost:3000/login.html (required before other pages)  
-- **Home:** http://localhost:3000  
+- **Home:** http://localhost:3000
+- **Notes** are on the home page (below Moments); `notes.html` redirects there.  
 - **Example festival:** http://localhost:3000/festival.html?id=valentine  
 
 ## Login (whole site)
@@ -113,6 +114,8 @@ Use `"status": "coming-soon"` until the festival page is ready (card stays disab
 | `index.html` | Home — festival picker |
 | `festival.html?id=…` | One festival experience |
 | `festivals/manifest.json` | `timeline` (dates) + `festivals` (moment cards) |
+| `data/notes.json` | Surprise note board messages |
+| Home **Notes** section | Pin notes with colors, handwriting text, and photos |
 | `festivals/*.json` | Per-festival content & theme |
 | `js/views-store.js` | Shared view counts (Supabase / API / local) |
 | `js/` | Viewport, heart animation, page logic |

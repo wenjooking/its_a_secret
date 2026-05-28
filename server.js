@@ -9,6 +9,36 @@ const ROOT = __dirname;
 const viewsPath = path.join(ROOT, "data", "views.json");
 const authPath = path.join(ROOT, "config", "auth.json");
 const manifestPath = path.join(ROOT, "festivals", "manifest.json");
+const notesPath = path.join(ROOT, "data", "notes.json");
+const notesAssetsDir = path.join(ROOT, "assets", "notes");
+const NOTE_COLORS = new Set([
+  "pink",
+  "blush",
+  "rose",
+  "coral",
+  "peach",
+  "cream",
+  "lemon",
+  "mint",
+  "sage",
+  "sky",
+  "lavender",
+  "lilac",
+]);
+const NOTE_FONTS = new Set([
+  "caveat",
+  "patrick",
+  "satisfy",
+  "dmsans",
+  "merriweather",
+  "playfair",
+  "noto-sans-sc",
+  "noto-serif-sc",
+  "ma-shan-zheng",
+  "zcool-xiaowei",
+]);
+const NOTE_PINS = new Set(["red", "gold", "blue", "pink", "green", "silver"]);
+const MAX_NOTE_IMAGE_BYTES = 3 * 1024 * 1024;
 
 function hashPasscode(passcode) {
   return crypto.createHash("sha256").update(passcode).digest("hex");
@@ -38,7 +68,7 @@ function incrementView(id) {
   return views;
 }
 
-app.use(express.json());
+app.use(express.json({ limit: "5mb" }));
 
 app.get("/api/views", (_req, res) => {
   res.json(readViews());
@@ -139,6 +169,181 @@ app.get("/api/manifest", (_req, res) => {
     res.json(readManifest());
   } catch {
     res.status(500).json({ error: "Could not read manifest." });
+  }
+});
+
+function readNotes() {
+  try {
+    const data = JSON.parse(fs.readFileSync(notesPath, "utf8"));
+    return Array.isArray(data.notes) ? data.notes : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeNotes(notes) {
+  fs.mkdirSync(path.dirname(notesPath), { recursive: true });
+  fs.writeFileSync(notesPath, JSON.stringify({ notes }, null, 2) + "\n");
+}
+
+function mimeToExt(mime) {
+  const map = {
+    "image/jpeg": "jpg",
+    "image/png": "png",
+    "image/webp": "webp",
+    "image/gif": "gif",
+  };
+  return map[String(mime || "").toLowerCase()] || null;
+}
+
+function deleteNoteImage(imagePath) {
+  if (!imagePath || !/^notes\/[a-zA-Z0-9_.-]+$/.test(imagePath)) return;
+  const full = path.join(ROOT, "assets", imagePath);
+  try {
+    fs.unlinkSync(full);
+  } catch {
+    /* ignore */
+  }
+}
+
+function sanitizeNote(raw) {
+  const id = String(raw.id || "")
+    .trim()
+    .replace(/[^a-zA-Z0-9_-]+/g, "")
+    .slice(0, 64);
+  const body = String(raw.body || "").trim();
+  const image = String(raw.image || "").trim();
+  if (!id || (!body && !image)) return null;
+  if (body.length > 500) return null;
+  if (image && !/^notes\/[a-zA-Z0-9_.-]+$/.test(image)) return null;
+
+  const author = String(raw.author || "").trim().slice(0, 40) || "Us";
+  let createdAt = String(raw.createdAt || "").trim();
+  if (!createdAt || Number.isNaN(Date.parse(createdAt))) {
+    createdAt = new Date().toISOString();
+  }
+
+  const color = NOTE_COLORS.has(raw.color) ? raw.color : "pink";
+  const font = NOTE_FONTS.has(raw.font) ? raw.font : "caveat";
+  const note = { id, author, body, createdAt, color, font };
+  if (image) note.image = image;
+
+  const x = clampNoteCoord(raw.x, 0, 8000);
+  const y = clampNoteCoord(raw.y, 0, 8000);
+  const rotation = clampNoteCoord(raw.rotation, -18, 18);
+  if (x !== undefined) note.x = x;
+  if (y !== undefined) note.y = y;
+  if (rotation !== undefined) note.rotation = rotation;
+
+  const pin = String(raw.pin || "").trim();
+  if (
+    pin &&
+    (NOTE_PINS.has(pin) || /^file-\d{1,2}$/.test(pin))
+  ) {
+    note.pin = pin;
+  }
+
+  return note;
+}
+
+function clampNoteCoord(value, min, max) {
+  const n = Number(value);
+  if (!Number.isFinite(n)) return undefined;
+  return Math.round(Math.max(min, Math.min(max, n)));
+}
+
+app.get("/api/notes", (_req, res) => {
+  try {
+    res.json({ notes: readNotes() });
+  } catch {
+    res.status(500).json({ error: "Could not read notes." });
+  }
+});
+
+app.post("/api/notes/upload", (req, res) => {
+  const noteId = String(req.body?.noteId || "")
+    .trim()
+    .replace(/[^a-zA-Z0-9_-]/g, "")
+    .slice(0, 64);
+  const dataUrl = String(req.body?.dataUrl || "");
+
+  if (!noteId || !dataUrl) {
+    res.status(400).json({ error: "Missing image data." });
+    return;
+  }
+
+  const match = dataUrl.match(/^data:(image\/(?:jpeg|png|webp|gif));base64,(.+)$/i);
+  if (!match) {
+    res.status(400).json({ error: "Use a JPEG, PNG, WebP, or GIF image." });
+    return;
+  }
+
+  const ext = mimeToExt(match[1]);
+  if (!ext) {
+    res.status(400).json({ error: "Unsupported image type." });
+    return;
+  }
+
+  let buffer;
+  try {
+    buffer = Buffer.from(match[2], "base64");
+  } catch {
+    res.status(400).json({ error: "Invalid image data." });
+    return;
+  }
+
+  if (!buffer.length || buffer.length > MAX_NOTE_IMAGE_BYTES) {
+    res.status(400).json({ error: "Image must be under 3 MB." });
+    return;
+  }
+
+  try {
+    fs.mkdirSync(notesAssetsDir, { recursive: true });
+    const filename = `${noteId}.${ext}`;
+    fs.writeFileSync(path.join(notesAssetsDir, filename), buffer);
+    res.json({ ok: true, image: `notes/${filename}` });
+  } catch {
+    res.status(500).json({ error: "Could not save image." });
+  }
+});
+
+app.put("/api/notes", (req, res) => {
+  const raw = Array.isArray(req.body?.notes) ? req.body.notes : null;
+  if (!raw) {
+    res.status(400).json({ error: "Invalid notes." });
+    return;
+  }
+
+  const previous = readNotes();
+  const cleaned = [];
+  const ids = new Set();
+
+  for (const item of raw) {
+    const note = sanitizeNote(item);
+    if (!note) {
+      res.status(400).json({
+        error: "Each note needs text or a photo (max 500 characters).",
+      });
+      return;
+    }
+    if (ids.has(note.id)) {
+      res.status(400).json({ error: `Duplicate note id: ${note.id}` });
+      return;
+    }
+    ids.add(note.id);
+    cleaned.push(note);
+  }
+
+  cleaned.sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt));
+
+  try {
+    writeNotes(cleaned);
+    previous
+      .filter((p) => !cleaned.some((c) => c.id === p.id))
+      .forEach((n) => deleteNoteImage(n.image));
+    res.json({ ok: true, notes: cleaned });
+  } catch {
+    res.status(500).json({ error: "Could not save notes." });
   }
 });
 

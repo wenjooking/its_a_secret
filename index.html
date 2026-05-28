@@ -7,7 +7,7 @@
   <title>🐻 & 🐰</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Ma+Shan+Zheng&family=Merriweather:ital,wght@0,400;0,700;1,400&family=Noto+Sans+SC:wght@400;500&family=Noto+Serif+SC:wght@400;600&family=Patrick+Hand&family=Playfair+Display:ital,wght@0,500;0,600;1,500&family=Satisfy&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
   <script src="js/auth.js"></script>
   <script src="js/theme.js" defer></script>
@@ -65,6 +65,21 @@
     <section class="home-moments" aria-labelledby="momentsHeading">
       <h2 class="home-section-title" id="momentsHeading">Moments</h2>
       <div class="festival-grid" id="festivalGrid"></div>
+    </section>
+
+    <section class="home-notes" id="homeNotes" aria-labelledby="notesHeading">
+      <div class="home-section-head">
+        <h2 class="home-section-title" id="notesHeading">Notes</h2>
+        <button type="button" class="timeline-head-btn" id="notesAddBtn" aria-label="Add note" title="Add note">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 20h9"/>
+            <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/>
+          </svg>
+        </button>
+      </div>
+      <p class="notes-empty hidden" id="notesEmpty">No notes yet — tap Add Notes to leave the first one ♡</p>
+      <p class="notes-board-hint hidden" id="notesBoardHint">Drag notes anywhere on the board to arrange them.</p>
+      <div class="notes-grid notes-board" id="notesGrid" role="application" aria-label="Notes board"></div>
     </section>
   </main>
 
@@ -204,6 +219,99 @@
     </div>
   </div>
 
+  <div class="timeline__popout timeline__popout--floating hidden" id="noteDetailPopout" role="dialog" aria-label="Note options">
+    <div class="timeline__popout-actions timeline__popout-actions--stack">
+      <button type="button" class="timeline__popout-btn timeline__popout-btn--edit" id="notePopoutEdit">Edit</button>
+      <button type="button" class="timeline__popout-btn timeline__popout-btn--delete" id="notePopoutDelete">Delete</button>
+      <button type="button" class="timeline__popout-btn timeline__popout-btn--cancel" id="notePopoutCancel">Cancel</button>
+    </div>
+  </div>
+
+  <div class="timeline-editor-modal hidden" id="noteAddModal" role="dialog" aria-modal="true" aria-labelledby="noteAddTitle" aria-hidden="true">
+    <button type="button" class="timeline-editor-modal__backdrop" id="noteAddBackdrop" aria-label="Close"></button>
+    <div class="timeline-editor-modal__card">
+      <button type="button" class="passcode-modal__close" id="noteAddClose" aria-label="Close">×</button>
+      <h2 class="passcode-modal__title" id="noteAddTitle">Add note</h2>
+      <form id="notesForm" class="timeline-editor-form notes-compose__form">
+        <label class="login-label" for="noteBody">Your note</label>
+        <textarea
+          class="notes-compose__input"
+          id="noteBody"
+          name="body"
+          rows="5"
+          maxlength="500"
+          placeholder="Write something sweet…"
+        ></textarea>
+
+        <label class="login-label" for="composeFontSelect">Font</label>
+        <select class="timeline-editor-input notes-font-select" id="composeFontSelect" aria-label="Note font"></select>
+
+        <fieldset class="notes-color-picker">
+          <legend class="login-label">Color</legend>
+          <div class="notes-color-picker__options" id="composeColorPicker" role="radiogroup" aria-label="Note color"></div>
+        </fieldset>
+
+        <div class="notes-image-field">
+          <label class="login-label" for="noteImage">Photo (optional)</label>
+          <input class="notes-image-field__input visually-hidden" type="file" id="noteImage" accept="image/jpeg,image/png,image/webp,image/gif" />
+          <div class="notes-image-field__actions">
+            <button type="button" class="settings-btn settings-btn--secondary" id="noteImagePick">Choose image</button>
+            <button type="button" class="settings-btn settings-btn--secondary hidden" id="noteImageClear">Remove</button>
+          </div>
+          <div class="notes-image-preview hidden" id="noteImagePreview">
+            <img id="noteImagePreviewImg" alt="" />
+          </div>
+        </div>
+
+        <p class="notes-compose__hint" id="notesAuthorHint">Posting as you</p>
+        <p class="settings-error hidden" id="notesError" role="alert"></p>
+
+        <div class="passcode-modal__actions">
+          <button type="button" class="settings-btn settings-btn--secondary" id="noteAddCancel">Cancel</button>
+          <button type="submit" class="settings-btn settings-btn--primary" id="noteAddSave">Add note</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="timeline-editor-modal hidden" id="noteEditModal" role="dialog" aria-modal="true" aria-labelledby="noteEditTitle" aria-hidden="true">
+    <button type="button" class="timeline-editor-modal__backdrop" id="noteEditBackdrop" aria-label="Close"></button>
+    <div class="timeline-editor-modal__card">
+      <button type="button" class="passcode-modal__close" id="noteEditClose" aria-label="Close">×</button>
+      <h2 class="passcode-modal__title" id="noteEditTitle">Edit note</h2>
+      <form id="noteEditForm" class="timeline-editor-form">
+        <label class="login-label" for="editNoteBody">Your note</label>
+        <textarea class="notes-compose__input" id="editNoteBody" rows="5" maxlength="500"></textarea>
+
+        <label class="login-label" for="editFontSelect">Font</label>
+        <select class="timeline-editor-input notes-font-select" id="editFontSelect" aria-label="Note font"></select>
+
+        <fieldset class="notes-color-picker">
+          <legend class="login-label">Color</legend>
+          <div class="notes-color-picker__options" id="editColorPicker" role="radiogroup" aria-label="Note color"></div>
+        </fieldset>
+
+        <div class="notes-image-field">
+          <label class="login-label">Photo</label>
+          <div class="notes-image-field__actions">
+            <button type="button" class="settings-btn settings-btn--secondary" id="editNoteImagePick">Change image</button>
+            <button type="button" class="settings-btn settings-btn--secondary hidden" id="editNoteImageClear">Remove photo</button>
+          </div>
+          <input class="notes-image-field__input visually-hidden" type="file" id="editNoteImage" accept="image/jpeg,image/png,image/webp,image/gif" />
+          <div class="notes-image-preview hidden" id="editNoteImagePreview">
+            <img id="editNoteImagePreviewImg" alt="" />
+          </div>
+        </div>
+
+        <p class="settings-error hidden" id="noteEditError" role="alert"></p>
+        <div class="passcode-modal__actions">
+          <button type="button" class="settings-btn settings-btn--secondary" id="noteEditCancel">Cancel</button>
+          <button type="submit" class="settings-btn settings-btn--primary" id="noteEditSave">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <p class="settings-toast hidden" id="homeToast" role="status" aria-live="polite"></p>
 
   <script src="js/seen-store.js"></script>
@@ -211,6 +319,11 @@
   <script src="js/manifest-store.js"></script>
   <script src="js/timeline-editor.js"></script>
   <script src="js/card-editor.js"></script>
+  <script src="js/note-colors.js"></script>
+  <script src="js/note-fonts.js"></script>
+  <script src="js/note-pins.js"></script>
+  <script src="js/notes-store.js"></script>
+  <script src="js/notes.js"></script>
   <script src="js/home.js"></script>
 </body>
 </html>

@@ -9,6 +9,7 @@ const copyFiles = [
   "festival.html",
   "login.html",
   "settings.html",
+  "notes.html",
   "style.css",
 ];
 const copyDirs = ["js", "festivals", "assets", "config", "data"];

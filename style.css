@@ -322,8 +322,13 @@ body {
   margin-bottom: 40px;
 }
 
-.home-moments .home-section-title {
+.home-moments .home-section-title,
+.home-notes .home-section-title {
   margin-bottom: 16px;
+}
+
+.home-notes .home-section-head .home-section-title {
+  margin-bottom: 0;
 }
 
 /* Timeline — show ~3 rows, scroll for the rest */
@@ -684,13 +689,22 @@ body {
 }
 
 .timeline__new-dot,
-.festival-card__new-dot {
+.festival-card__new-dot,
+.note-card__new-dot {
   flex-shrink: 0;
   width: 8px;
   height: 8px;
   border-radius: 50%;
   background: var(--theme-accent);
   box-shadow: 0 0 10px var(--theme-accent);
+}
+
+.note-card__new-dot {
+  position: absolute;
+  top: 10px;
+  left: 12px;
+  z-index: 6;
+  pointer-events: none;
 }
 
 .timeline__item--soon .timeline__link {
@@ -1844,4 +1858,476 @@ body.timeline-editor-open {
 .numpad--settings {
   max-width: 280px;
   margin: 0 auto;
+}
+
+/* ===== Surprise note board ===== */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.page-notes {
+  display: flex;
+  flex-direction: column;
+  min-height: var(--app-height);
+}
+
+.notes-main {
+  flex: 1;
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: calc(24px + var(--safe-top)) var(--page-x) calc(32px + var(--safe-bottom));
+}
+
+.notes-header {
+  margin-bottom: 28px;
+}
+
+.notes-title {
+  font-size: clamp(1.75rem, 5vw, 2.25rem);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  margin: 12px 0 8px;
+}
+
+.notes-subtitle {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.home-notes {
+  margin-bottom: 40px;
+}
+
+.home-moments {
+  margin-bottom: 40px;
+}
+
+.notes-compose__form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.notes-compose__input {
+  width: 100%;
+  min-height: 120px;
+  padding: 14px 16px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 1rem;
+  line-height: 1.5;
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+.notes-font-select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23ff6b9d' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 40px;
+}
+
+.notes-compose__input:focus {
+  outline: none;
+  border-color: var(--theme-accent);
+}
+
+.notes-compose__hint {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.notes-compose__submit {
+  align-self: flex-start;
+  margin-top: 4px;
+}
+
+.notes-color-picker {
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.notes-color-picker__options {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.notes-color-picker__option {
+  cursor: pointer;
+}
+
+.notes-color-picker__option input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.notes-color-picker__swatch {
+  display: block;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 2px solid transparent;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.notes-color-picker__option input:checked + .notes-color-picker__swatch {
+  border-color: var(--theme-accent);
+  transform: scale(1.08);
+}
+
+.notes-color-picker__option input:focus-visible + .notes-color-picker__swatch {
+  outline: 2px solid var(--theme-accent);
+  outline-offset: 2px;
+}
+
+.notes-color-picker__swatch--pink {
+  background: linear-gradient(160deg, #ffd6e8, #ffb8d9);
+}
+
+.notes-color-picker__swatch--blush {
+  background: linear-gradient(160deg, #ffe8f0, #ffc9dd);
+}
+
+.notes-color-picker__swatch--cream {
+  background: linear-gradient(160deg, #fff8e8, #ffe9b8);
+}
+
+.notes-color-picker__swatch--lavender {
+  background: linear-gradient(160deg, #eee8ff, #d4c4ff);
+}
+
+.notes-color-picker__swatch--rose {
+  background: linear-gradient(160deg, #ffe0e8, #ff9eb8);
+}
+
+.notes-color-picker__swatch--coral {
+  background: linear-gradient(160deg, #ffe5dc, #ffab8f);
+}
+
+.notes-color-picker__swatch--peach {
+  background: linear-gradient(160deg, #ffecd9, #ffc9a3);
+}
+
+.notes-color-picker__swatch--lemon {
+  background: linear-gradient(160deg, #fff9d6, #f5e6a8);
+}
+
+.notes-color-picker__swatch--mint {
+  background: linear-gradient(160deg, #dffcf0, #9ee8c8);
+}
+
+.notes-color-picker__swatch--sage {
+  background: linear-gradient(160deg, #e8f2e4, #b8d4b0);
+}
+
+.notes-color-picker__swatch--sky {
+  background: linear-gradient(160deg, #dff0ff, #9ed4ff);
+}
+
+.notes-color-picker__swatch--lilac {
+  background: linear-gradient(160deg, #f0e4ff, #c9a8ff);
+}
+
+.notes-image-field__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.notes-image-preview {
+  margin-top: 10px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  max-width: 280px;
+}
+
+.notes-image-preview img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 200px;
+  object-fit: cover;
+}
+
+.notes-board {
+  margin-bottom: 24px;
+}
+
+.notes-empty {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  text-align: center;
+  padding: 32px 16px;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-lg);
+  margin: 0 0 16px;
+}
+
+.notes-board-hint {
+  margin: 0 0 12px;
+  font-size: 0.82rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+.notes-grid.notes-board {
+  position: relative;
+  width: 100%;
+  min-height: 180px;
+  padding: 12px 8px 28px;
+  touch-action: pan-y;
+}
+
+.note-card__pin {
+  position: absolute;
+  top: -14px;
+  right: 18px;
+  width: 30px;
+  height: 38px;
+  z-index: 5;
+  pointer-events: none;
+  transform: rotate(var(--pin-tilt, 6deg));
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.22));
+}
+
+.note-card__pin-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.note-card__pin-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.note-card {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 18px 16px 14px;
+  overflow: visible;
+  min-height: 120px;
+  width: 220px;
+  max-width: calc(100% - 24px);
+  transform-origin: center center;
+  border-radius: 4px;
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.12),
+    0 8px 24px rgba(0, 0, 0, 0.08);
+  transform: rotate(var(--note-tilt, -1deg));
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+  cursor: grab;
+  z-index: 1;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.note-card:hover:not(.note-card--dragging) {
+  transform: rotate(var(--note-tilt, -1deg)) translateY(-4px);
+  z-index: 2;
+}
+
+.note-card--dragging {
+  cursor: grabbing;
+  z-index: 40;
+  touch-action: none;
+  transition: none;
+  transform: rotate(var(--note-tilt, -1deg)) scale(1.02);
+  box-shadow:
+    0 6px 16px rgba(0, 0, 0, 0.18),
+    0 16px 40px rgba(0, 0, 0, 0.12);
+}
+
+.note-card--pink {
+  background: linear-gradient(160deg, #ffd6e8 0%, #ffb8d9 100%);
+  color: #4a2030;
+}
+
+.note-card--blush {
+  background: linear-gradient(160deg, #ffe8f0 0%, #ffc9dd 100%);
+  color: #4a2030;
+}
+
+.note-card--cream {
+  background: linear-gradient(160deg, #fff8e8 0%, #ffe9b8 100%);
+  color: #4a3820;
+}
+
+.note-card--lavender {
+  background: linear-gradient(160deg, #eee8ff 0%, #d4c4ff 100%);
+  color: #30284a;
+}
+
+.note-card--rose {
+  background: linear-gradient(160deg, #ffe0e8 0%, #ff9eb8 100%);
+  color: #4a2030;
+}
+
+.note-card--coral {
+  background: linear-gradient(160deg, #ffe5dc 0%, #ffab8f 100%);
+  color: #4a2820;
+}
+
+.note-card--peach {
+  background: linear-gradient(160deg, #ffecd9 0%, #ffc9a3 100%);
+  color: #4a3020;
+}
+
+.note-card--lemon {
+  background: linear-gradient(160deg, #fff9d6 0%, #f5e6a8 100%);
+  color: #4a4020;
+}
+
+.note-card--mint {
+  background: linear-gradient(160deg, #dffcf0 0%, #9ee8c8 100%);
+  color: #1e4034;
+}
+
+.note-card--sage {
+  background: linear-gradient(160deg, #e8f2e4 0%, #b8d4b0 100%);
+  color: #2a3d28;
+}
+
+.note-card--sky {
+  background: linear-gradient(160deg, #dff0ff 0%, #9ed4ff 100%);
+  color: #1a3048;
+}
+
+.note-card--lilac {
+  background: linear-gradient(160deg, #f0e4ff 0%, #c9a8ff 100%);
+  color: #30284a;
+}
+
+:root[data-theme="light"] .note-card--pink {
+  background: linear-gradient(160deg, #ffe0ef 0%, #ffc0dc 100%);
+}
+
+:root[data-theme="light"] .note-card--blush {
+  background: linear-gradient(160deg, #fff0f5 0%, #ffd6e8 100%);
+}
+
+:root[data-theme="light"] .note-card--cream {
+  background: linear-gradient(160deg, #fffbeb 0%, #ffefc2 100%);
+}
+
+:root[data-theme="light"] .note-card--lavender {
+  background: linear-gradient(160deg, #f5f0ff 0%, #e4d4ff 100%);
+}
+
+.note-card__footer {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: auto;
+  width: 100%;
+}
+
+.note-card__menu-wrap {
+  flex-shrink: 0;
+}
+
+.note-card__menu-btn {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  color: var(--theme-accent);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+}
+
+.note-card__menu-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.note-card__menu-btn:hover {
+  color: var(--theme-accent);
+}
+
+.timeline__popout-actions--stack {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.timeline__popout-actions--stack .timeline__popout-btn {
+  width: 100%;
+  text-align: center;
+}
+
+.note-card__image {
+  display: block;
+  width: 100%;
+  max-height: 160px;
+  object-fit: cover;
+  border-radius: 2px;
+  margin: 0 0 10px;
+}
+
+.note-card__body {
+  line-height: 1.35;
+  margin: 0 0 10px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.note-card__body:only-of-type,
+.note-card__image + .note-card__body {
+  margin-top: 0;
+}
+
+.note-card__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font);
+  font-size: 0.68rem;
+  font-weight: 600;
+  opacity: 0.65;
+  letter-spacing: 0.02em;
+}
+
+.note-card__author {
+  text-transform: none;
 }
