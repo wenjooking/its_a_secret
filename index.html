@@ -32,7 +32,16 @@
   </header>
 
   <main class="home-main">
-    <section class="festival-grid" id="festivalGrid" aria-label="Choose a moment"></section>
+    <section class="home-timeline" aria-labelledby="timelineHeading">
+      <h2 class="home-section-title" id="timelineHeading">Our timeline</h2>
+      <div class="timeline-scroll" tabindex="0" aria-label="Scroll through our timeline">
+        <ol class="timeline" id="timelineList"></ol>
+      </div>
+    </section>
+    <section class="home-moments" aria-labelledby="momentsHeading">
+      <h2 class="home-section-title" id="momentsHeading">Moments</h2>
+      <div class="festival-grid" id="festivalGrid"></div>
+    </section>
   </main>
 
   <footer class="credit home-credit">
@@ -40,6 +49,8 @@
     <button type="button" class="sign-out" id="signOut">Sign out</button>
   </footer>
 
+  <script src="js/seen-store.js"></script>
+  <script src="js/views-store.js"></script>
   <script src="js/home.js"></script>
 </body>
 </html>

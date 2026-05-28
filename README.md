@@ -29,6 +29,29 @@ Use your 8-digit code as the argument. Copy the hash into `config/auth.json` →
 
 This is a simple privacy lock for a personal site (the hash is in the repo). It is not strong security against someone technical.
 
+## View counts (sync across phones & laptops)
+
+Without setup, each browser keeps its own count (`localStorage`). To share counts everywhere (including **GitLab Pages**), use **Supabase** (free):
+
+1. Create a project at [supabase.com](https://supabase.com).
+2. In the dashboard: **SQL Editor** → paste and run everything in `supabase/schema.sql`.
+3. **Project Settings** → **API** → copy **Project URL** and the **publishable** key (`sb_publishable_...`). Do not put the **secret** key in the site.
+4. Copy the example config and fill in your values:
+
+   ```bash
+   cp config/supabase.json.example config/supabase.json
+   ```
+
+   Edit `config/supabase.json` with your URL and `publishableKey`. Legacy `anonKey` (JWT) also works. This file is gitignored.
+
+5. Restart `npm start` and open the home page — both devices should show the same counts after you open a festival card.
+
+**GitLab Pages:** `npm run build` copies `config/` into `public/`. Put `config/supabase.json` on the machine that runs the build (your laptop or a CI secret file copied in before `npm run build`). The anon key is safe to expose in the built site when RLS is set up as in `schema.sql` (read counts + increment only via RPC).
+
+**Alternative:** Deploy the Node app (e.g. [Render](https://render.com) — `render.yaml` is included). Then `POST /api/views/:id` syncs via `data/views.json` on the server without Supabase.
+
+Priority: Supabase → Node `/api/views` → `data/views.json` → `localStorage`.
+
 ## Add a new festival
 
 ### 1. Assets folder
@@ -69,7 +92,9 @@ Add an entry in `festivals/manifest.json`:
 }
 ```
 
-Add `"author"` (optional) to show **by Name** under the title. Add `"date"` (optional, `DD/MM/YYYY`) on the top-right of the card. Omit either when not needed yet.
+Add `"author"` (optional) to show **by Name** under the title. Add `"date"` (optional, `DD/MM/YYYY`) on the top-right of the card and in the home timeline. Omit either when not needed yet.
+
+Add `"updatedAt"` (ISO date, e.g. `"2026-05-28"`) whenever you change letters or images. Visitors see a **New** dot until they open that moment; bump `updatedAt` again after the next edit.
 
 Use `"status": "coming-soon"` until the festival page is ready (card stays disabled on the home page).
 
@@ -81,7 +106,10 @@ Use `"status": "coming-soon"` until the festival page is ready (card stays disab
 | `festival.html?id=…` | One festival experience |
 | `festivals/manifest.json` | List of cards on home |
 | `festivals/*.json` | Per-festival content & theme |
+| `js/views-store.js` | Shared view counts (Supabase / API / local) |
 | `js/` | Viewport, heart animation, page logic |
+| `supabase/schema.sql` | Database setup for synced views |
+| `config/supabase.json` | Your Supabase URL + anon key (local only) |
 | `assets/{id}/` | Images & music per festival |
 | `server.js` | Local static server |
 

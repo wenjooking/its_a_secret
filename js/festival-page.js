@@ -76,6 +76,20 @@
     return res.json();
   }
 
+  async function markSeenFromManifest(id) {
+    try {
+      const res = await fetch("festivals/manifest.json");
+      if (!res.ok) return;
+      const manifest = await res.json();
+      const entry = manifest.festivals?.find((f) => f.id === id);
+      if (entry?.updatedAt) {
+        window.CoupleApp?.seen?.mark(id, entry.updatedAt);
+      }
+    } catch {
+      /* ignore */
+    }
+  }
+
   function showError(message) {
     document.body.innerHTML = `
       <main class="error-page">
@@ -126,6 +140,7 @@
       }
 
       applyConfig(data);
+      markSeenFromManifest(id);
       viewport.init(canvas);
       setupScrollReveal();
       startExperience();
