@@ -1,3 +1,17 @@
 {
-  "notes": []
+  "notes": [
+    {
+      "id": "note-1779958839263",
+      "author": "Wen Joo",
+      "body": "I love you 小宝",
+      "createdAt": "2026-05-28T09:00:39.263Z",
+      "color": "cream",
+      "font": "ma-shan-zheng",
+      "image": "notes/note-1779958839263.png",
+      "x": 100,
+      "y": 78,
+      "rotation": -2,
+      "pin": "green"
+    }
+  ]
 }

@@ -133,5 +133,12 @@
     if (action === "clear") clearPasscode();
   });
 
+  window.CoupleApp?.passcodeNumpad?.attachKeyboard?.({
+    isEnabled: () => !verifying && document.activeElement !== nameInput,
+    onDigit: addDigit,
+    onBackspace: removeDigit,
+    onClear: clearPasscode,
+  });
+
   updateDisplay();
 })();

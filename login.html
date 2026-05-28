@@ -60,7 +60,9 @@
         <div
           class="passcode-display"
           id="passcodeDisplay"
-          aria-label="Passcode"
+          tabindex="0"
+          role="button"
+          aria-label="Passcode — type 8 digits on your keyboard or use the keypad below"
         >
           <span class="passcode-value" id="passcodeValue" aria-hidden="true"></span>
         </div>
@@ -86,6 +88,7 @@
   </main>
 
   <script src="js/auth.js"></script>
+  <script src="js/passcode-numpad.js"></script>
   <script src="js/login.js"></script>
 </body>
 </html>

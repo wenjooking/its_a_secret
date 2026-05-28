@@ -101,12 +101,14 @@
       modal.classList.remove("hidden");
       modal.setAttribute("aria-hidden", "false");
       document.body.classList.add("passcode-modal-open");
+      pad.enableKeyboard?.(() => !modal.classList.contains("hidden"));
       requestAnimationFrame(() => {
         document.getElementById("passcodeCurrent")?.focus();
       });
     }
 
     function closeModal() {
+      pad.disableKeyboard?.();
       modal.classList.add("hidden");
       modal.setAttribute("aria-hidden", "true");
       document.body.classList.remove("passcode-modal-open");
