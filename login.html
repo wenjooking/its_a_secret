@@ -29,9 +29,23 @@
     <div class="login-card">
       <p class="login-emoji" aria-hidden="true">🐻 & 🐰</p>
       <h1 class="login-title">Our secret space</h1>
-      <p class="login-subtitle">Enter your passcode</p>
+      <p class="login-subtitle">Sign in to continue</p>
 
       <div class="passcode-form" id="passcodeForm">
+        <label class="login-label" for="loginName">Name</label>
+        <input
+          class="login-name"
+          type="text"
+          id="loginName"
+          name="name"
+          autocomplete="name"
+          autocapitalize="none"
+          spellcheck="false"
+          placeholder="Your name"
+          required
+        />
+
+        <label class="login-label" for="passcodeDisplay">Passcode</label>
         <div
           class="passcode-display"
           id="passcodeDisplay"

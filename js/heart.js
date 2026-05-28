@@ -4,7 +4,7 @@ window.CoupleApp = window.CoupleApp || {};
 (function (app) {
   const { viewport } = app;
 
-  let heartColor = "#FF99CC";
+  let heartColor = "#FF6B9D";
   let bgParticles = [];
   let heart = null;
   let animationId = null;

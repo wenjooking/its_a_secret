@@ -1,5 +1,8 @@
 (function () {
   const PASSCODE_LENGTH = 8;
+  const ALLOWED_NAMES = ["jolin", "wenjoo"];
+
+  const nameInput = document.getElementById("loginName");
   const display = document.getElementById("passcodeDisplay");
   const valueEl = document.getElementById("passcodeValue");
   const numpad = document.getElementById("numpad");
@@ -8,6 +11,11 @@
 
   let digits = [];
   let verifying = false;
+
+  function isValidName(value) {
+    const name = value.trim().toLowerCase();
+    return ALLOWED_NAMES.includes(name);
+  }
 
   function getNextUrl() {
     const params = new URLSearchParams(window.location.search);
@@ -81,6 +89,12 @@
   }
 
   async function submitPasscode() {
+    if (!isValidName(nameInput.value)) {
+      showError("Name not recognized.");
+      nameInput.focus();
+      return;
+    }
+
     verifying = true;
     const code = digits.join("");
 
@@ -99,6 +113,8 @@
     window.location.replace(getNextUrl());
     return;
   }
+
+  nameInput.addEventListener("input", clearError);
 
   numpad.addEventListener("click", (e) => {
     const key = e.target.closest(".numpad__key");

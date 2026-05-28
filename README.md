@@ -61,6 +61,7 @@ Add an entry in `festivals/manifest.json`:
 {
   "id": "your-festival-id",
   "title": "Display name",
+  "author": "Wen Joo",
   "tagline": "Short line on the card",
   "emoji": "🎉",
   "date": "26/04/2026",
@@ -68,7 +69,7 @@ Add an entry in `festivals/manifest.json`:
 }
 ```
 
-Add `"date"` (optional, `DD/MM/YYYY`) to show a date on the bottom-right of the card. Omit for moments without a date yet.
+Add `"author"` (optional) to show **by Name** under the title. Add `"date"` (optional, `DD/MM/YYYY`) on the top-right of the card. Omit either when not needed yet.
 
 Use `"status": "coming-soon"` until the festival page is ready (card stays disabled on the home page).
 
