@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0a0a0f" />
+  <title>Settings · 🐻 & 🐰</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="js/auth.js"></script>
+  <script src="js/theme.js" defer></script>
+  <script src="js/action-menu.js" defer></script>
+</head>
+<body class="page-settings">
+
+  <div class="action-menu" id="actionMenu">
+    <div class="action-menu__extras">
+      <button type="button" class="fab-btn theme-toggle" id="themeToggle" aria-label="Switch to light theme">
+        <svg class="theme-toggle__icon theme-toggle__icon--sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="4"/>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+        </svg>
+        <svg class="theme-toggle__icon theme-toggle__icon--moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+      </button>
+      <a class="fab-btn fab-btn--settings is-active" href="settings.html" aria-label="Settings" aria-current="page">
+        <svg class="fab-btn__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+      </a>
+    </div>
+    <button type="button" class="fab-btn fab-btn--main" id="actionMenuToggle" aria-expanded="false" aria-label="Open menu">
+      <svg class="fab-btn__arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M12 15.5 5 8h14l-7 7.5z"/>
+      </svg>
+    </button>
+  </div>
+
+  <div class="home-glow" aria-hidden="true"></div>
+
+  <main class="settings-main">
+    <a class="back-link" href="index.html">
+      <span class="back-link__icon" aria-hidden="true">←</span>
+      Moments
+    </a>
+    <h1 class="settings-title">Settings</h1>
+
+    <section class="settings-group" aria-labelledby="settingsProfileHeading">
+      <h2 class="settings-group__title" id="settingsProfileHeading">You</h2>
+      <div class="settings-card">
+        <p class="settings-profile">
+          <span class="settings-profile__label">Signed in as</span>
+          <span class="settings-profile__name" id="settingsUserName">—</span>
+        </p>
+      </div>
+    </section>
+
+    <section class="settings-group" aria-labelledby="settingsLookHeading">
+      <h2 class="settings-group__title" id="settingsLookHeading">Appearance</h2>
+      <div class="settings-card">
+        <div class="settings-row">
+          <div class="settings-row__text">
+            <span class="settings-row__label">Theme</span>
+            <span class="settings-row__hint">Light or dark for the whole site</span>
+          </div>
+          <div class="settings-segmented" role="group" aria-label="Theme">
+            <button type="button" class="settings-segmented__btn" data-theme-pick="dark" id="themePickDark">Dark</button>
+            <button type="button" class="settings-segmented__btn" data-theme-pick="light" id="themePickLight">Light</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="settings-group" aria-labelledby="settingsMomentsHeading">
+      <h2 class="settings-group__title" id="settingsMomentsHeading">Moments</h2>
+      <div class="settings-card">
+        <div class="settings-row settings-row--stack">
+          <div class="settings-row__text">
+            <span class="settings-row__label">Music on open</span>
+            <span class="settings-row__hint">Play song when you enter a moment</span>
+          </div>
+          <label class="settings-switch">
+            <input type="checkbox" id="musicAutoplay" checked />
+            <span class="settings-switch__track" aria-hidden="true"></span>
+          </label>
+        </div>
+        <div class="settings-row settings-row--stack settings-row--border">
+          <div class="settings-row__text">
+            <span class="settings-row__label">Show “New” again</span>
+            <span class="settings-row__hint">Mark all moments as unseen on this device</span>
+          </div>
+          <button type="button" class="settings-btn settings-btn--secondary" id="resetNewBadges">Reset</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="settings-group" aria-labelledby="settingsSecurityHeading">
+      <h2 class="settings-group__title" id="settingsSecurityHeading">Security</h2>
+      <div class="settings-card">
+        <div class="settings-row settings-row--stack">
+          <div class="settings-row__text">
+            <span class="settings-row__label">Passcode</span>
+            <span class="settings-row__hint">Update your 8-digit sign-in code</span>
+          </div>
+          <button type="button" class="settings-btn settings-btn--secondary" id="openPasscodeChange">Change passcode</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="settings-group" aria-labelledby="settingsAccountHeading">
+      <h2 class="settings-group__title" id="settingsAccountHeading">Account</h2>
+      <div class="settings-card">
+        <button type="button" class="settings-btn settings-btn--danger" id="signOut">Sign out</button>
+        <p class="settings-footnote">You’ll need your name and passcode to come back.</p>
+      </div>
+    </section>
+  </main>
+
+  <div class="passcode-modal hidden" id="passcodeModal" role="dialog" aria-modal="true" aria-labelledby="passcodeModalTitle" aria-hidden="true">
+    <button type="button" class="passcode-modal__backdrop" id="passcodeModalBackdrop" aria-label="Close"></button>
+    <div class="passcode-modal__card">
+      <button type="button" class="passcode-modal__close" id="closePasscodeChange" aria-label="Close">×</button>
+      <h2 class="passcode-modal__title" id="passcodeModalTitle">Change passcode</h2>
+      <p class="settings-passcode-intro">Tap a row, then enter 8 digits on the keypad.</p>
+
+      <div class="settings-passcode-fields">
+        <div class="settings-passcode-field">
+          <span class="login-label">Current passcode</span>
+          <div class="passcode-display passcode-display--active" id="passcodeCurrent" tabindex="0" role="button" aria-label="Current passcode, tap to edit">
+            <span class="passcode-value" id="passcodeCurrentValue" aria-hidden="true"></span>
+          </div>
+        </div>
+        <div class="settings-passcode-field">
+          <span class="login-label">New passcode</span>
+          <div class="passcode-display" id="passcodeNew" tabindex="0" role="button" aria-label="New passcode, tap to edit">
+            <span class="passcode-value" id="passcodeNewValue" aria-hidden="true"></span>
+          </div>
+        </div>
+        <div class="settings-passcode-field">
+          <span class="login-label">Confirm new</span>
+          <div class="passcode-display" id="passcodeConfirm" tabindex="0" role="button" aria-label="Confirm new passcode, tap to edit">
+            <span class="passcode-value" id="passcodeConfirmValue" aria-hidden="true"></span>
+          </div>
+        </div>
+      </div>
+
+      <p class="settings-error hidden" id="passcodeChangeError" role="alert"></p>
+
+      <div class="passcode-modal__actions">
+        <button type="button" class="settings-btn settings-btn--secondary" id="cancelPasscodeChange">Cancel</button>
+        <button type="button" class="settings-btn settings-btn--primary" id="updatePasscode">Save</button>
+      </div>
+
+      <div class="numpad numpad--settings" id="settingsNumpad">
+        <button type="button" class="numpad__key" data-digit="1">1</button>
+        <button type="button" class="numpad__key" data-digit="2">2</button>
+        <button type="button" class="numpad__key" data-digit="3">3</button>
+        <button type="button" class="numpad__key" data-digit="4">4</button>
+        <button type="button" class="numpad__key" data-digit="5">5</button>
+        <button type="button" class="numpad__key" data-digit="6">6</button>
+        <button type="button" class="numpad__key" data-digit="7">7</button>
+        <button type="button" class="numpad__key" data-digit="8">8</button>
+        <button type="button" class="numpad__key" data-digit="9">9</button>
+        <button type="button" class="numpad__key numpad__key--action" data-action="clear" aria-label="Clear passcode">Clear</button>
+        <button type="button" class="numpad__key" data-digit="0">0</button>
+        <button type="button" class="numpad__key numpad__key--action" data-action="back" aria-label="Delete last digit">⌫</button>
+      </div>
+    </div>
+  </div>
+
+  <p class="settings-toast hidden" id="settingsToast" role="status" aria-live="polite"></p>
+
+  <script src="js/seen-store.js"></script>
+  <script src="js/passcode-numpad.js"></script>
+  <script src="js/settings.js"></script>
+</body>
+</html>

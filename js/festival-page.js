@@ -98,11 +98,15 @@
       </main>`;
   }
 
+  function shouldAutoplayMusic() {
+    return localStorage.getItem("couple_music_autoplay") !== "0";
+  }
+
   function startExperience() {
     hint.classList.add("show");
     heart.start();
 
-    if (music.src) {
+    if (music.src && shouldAutoplayMusic()) {
       music.play().catch(() => {});
     }
   }

@@ -4,7 +4,13 @@ const path = require("path");
 const root = path.join(__dirname, "..");
 const publicDir = path.join(root, "public");
 
-const copyFiles = ["index.html", "festival.html", "login.html", "style.css"];
+const copyFiles = [
+  "index.html",
+  "festival.html",
+  "login.html",
+  "settings.html",
+  "style.css",
+];
 const copyDirs = ["js", "festivals", "assets", "config", "data"];
 
 fs.rmSync(publicDir, { recursive: true, force: true });

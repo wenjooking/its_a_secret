@@ -6,6 +6,19 @@
   const siteSubtitle = document.getElementById("siteSubtitle");
 
   let viewCounts = {};
+  let manifestData = null;
+
+  const homeToast = document.getElementById("homeToast");
+  let homeToastTimer;
+
+  window.CoupleApp = window.CoupleApp || {};
+  window.CoupleApp.homeToast = function (message) {
+    if (!homeToast) return;
+    clearTimeout(homeToastTimer);
+    homeToast.textContent = message;
+    homeToast.classList.remove("hidden");
+    homeToastTimer = setTimeout(() => homeToast.classList.add("hidden"), 2800);
+  };
 
   function festivalHref(id) {
     return `festival.html?id=${encodeURIComponent(id)}`;
@@ -81,7 +94,10 @@
     if (!isReady) {
       return relativeStatusHtml(festival, "timeline__status", "Soon");
     }
-    return `<span class="timeline__chevron" aria-hidden="true">›</span>`;
+    if (relative) {
+      return relativeStatusHtml(festival, "timeline__status", "");
+    }
+    return "";
   }
 
   function relativeStatusHtml(festival, className, fallback) {
@@ -188,16 +204,8 @@
 
     const dateHtml = dateLabelHtml(festival, "timeline__date");
 
-    const inner = isReady
-      ? document.createElement("a")
-      : document.createElement("div");
+    const inner = document.createElement("div");
     inner.className = "timeline__link";
-    if (isReady) {
-      inner.href = festivalHref(festival.id);
-      inner.setAttribute("aria-label", `Open ${festival.title}`);
-    } else {
-      inner.setAttribute("aria-disabled", "true");
-    }
 
     inner.innerHTML = `
       <span class="timeline__emoji" aria-hidden="true">${festival.emoji || "✦"}</span>
@@ -210,19 +218,25 @@
       ${timelineTrailingHtml(festival, isReady)}
     `;
 
-    if (isReady) {
-      inner.addEventListener("click", async (e) => {
-        e.preventDefault();
-        const href = inner.href;
-        markOpened(festival);
-        const count = await window.CoupleApp.views.record(festival.id);
-        const card = document.querySelector(`.festival-card[data-festival-id="${festival.id}"]`);
-        if (card) updateCardViews(card, festival.id, count);
-        window.location.href = href;
-      });
-    }
+    const row = document.createElement("div");
+    row.className = "timeline__row";
 
-    li.appendChild(inner);
+    const menuWrap = document.createElement("div");
+    menuWrap.className = "timeline__menu-wrap";
+    menuWrap.dataset.festivalId = festival.id;
+    menuWrap.innerHTML = `
+      <button type="button" class="timeline__menu-btn" aria-label="View timeline entry" title="Options" aria-expanded="false">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <circle cx="12" cy="5" r="1.75"/>
+          <circle cx="12" cy="12" r="1.75"/>
+          <circle cx="12" cy="19" r="1.75"/>
+        </svg>
+      </button>
+    `;
+
+    row.appendChild(inner);
+    row.appendChild(menuWrap);
+    li.appendChild(row);
     return li;
   }
 
@@ -301,31 +315,32 @@
     scrollTimelineToNext(nextId);
   }
 
+  function renderPage(data) {
+    manifestData = data;
+    siteTitle.textContent = data.siteTitle;
+    siteSubtitle.textContent = data.siteSubtitle;
+    document.title = data.siteTitle;
+
+    renderTimeline(data.timeline);
+    window.CoupleApp.timelineEditor?.attachRowMenus();
+
+    grid.replaceChildren();
+    data.festivals.forEach((f) => grid.appendChild(createCard(f)));
+  }
+
   async function init() {
     try {
       await window.CoupleApp.views.init();
       viewCounts = await window.CoupleApp.views.load();
 
-      const res = await fetch("festivals/manifest.json");
-      if (!res.ok) throw new Error("manifest");
-      const data = await res.json();
+      const data = await window.CoupleApp.manifestStore.load();
+      renderPage(data);
 
-      siteTitle.textContent = data.siteTitle;
-      siteSubtitle.textContent = data.siteSubtitle;
-      document.title = data.siteTitle;
-
-      renderTimeline(data.festivals);
-
-      grid.replaceChildren();
-      data.festivals.forEach((f) => grid.appendChild(createCard(f)));
+      window.CoupleApp.timelineEditor?.bind(data, renderPage);
     } catch {
       siteSubtitle.textContent = "Could not load moments. Refresh to try again.";
     }
   }
-
-  document.getElementById("signOut")?.addEventListener("click", () => {
-    window.CoupleApp?.auth?.signOut();
-  });
 
   init();
 })();

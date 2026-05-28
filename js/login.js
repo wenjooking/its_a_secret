@@ -105,7 +105,8 @@
       return;
     }
 
-    window.CoupleApp.auth.signIn();
+    const name = nameInput.value.trim();
+    window.CoupleApp.auth.signIn(name);
     window.location.replace(getNextUrl());
   }
 

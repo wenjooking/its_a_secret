@@ -11,18 +11,34 @@
   <link rel="stylesheet" href="style.css" />
   <script src="js/auth.js"></script>
   <script src="js/theme.js" defer></script>
+  <script src="js/action-menu.js" defer></script>
 </head>
 <body class="page-home">
 
-  <button type="button" class="theme-toggle" id="themeToggle" aria-label="Switch to light theme">
-    <svg class="theme-toggle__icon theme-toggle__icon--sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <circle cx="12" cy="12" r="4"/>
-      <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
-    </svg>
-    <svg class="theme-toggle__icon theme-toggle__icon--moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-    </svg>
-  </button>
+  <div class="action-menu" id="actionMenu">
+    <div class="action-menu__extras">
+      <button type="button" class="fab-btn theme-toggle" id="themeToggle" aria-label="Switch to light theme">
+        <svg class="theme-toggle__icon theme-toggle__icon--sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="4"/>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+        </svg>
+        <svg class="theme-toggle__icon theme-toggle__icon--moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+      </button>
+      <a class="fab-btn fab-btn--settings" href="settings.html" aria-label="Settings">
+        <svg class="fab-btn__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+      </a>
+    </div>
+    <button type="button" class="fab-btn fab-btn--main" id="actionMenuToggle" aria-expanded="false" aria-label="Open menu">
+      <svg class="fab-btn__arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M12 15.5 5 8h14l-7 7.5z"/>
+      </svg>
+    </button>
+  </div>
 
   <div class="home-glow" aria-hidden="true"></div>
 
@@ -33,7 +49,15 @@
 
   <main class="home-main">
     <section class="home-timeline" aria-labelledby="timelineHeading">
-      <h2 class="home-section-title" id="timelineHeading">Our timeline</h2>
+      <div class="home-section-head">
+        <h2 class="home-section-title" id="timelineHeading">Our timeline</h2>
+        <button type="button" class="timeline-head-btn" id="timelineAddBtn" aria-label="Add to timeline" title="Add to timeline">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 20h9"/>
+            <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/>
+          </svg>
+        </button>
+      </div>
       <div class="timeline-scroll" tabindex="0" aria-label="Scroll through our timeline">
         <ol class="timeline" id="timelineList"></ol>
       </div>
@@ -44,13 +68,76 @@
     </section>
   </main>
 
-  <footer class="credit home-credit">
-    Made with love · Wenjoo
-    <button type="button" class="sign-out" id="signOut">Sign out</button>
-  </footer>
+  <footer class="credit home-credit">Made with love · Wenjoo</footer>
+
+  <div class="timeline__popout timeline__popout--floating hidden" id="timelineDetailPopout" role="dialog" aria-label="Timeline details">
+    <dl class="timeline__popout-info">
+      <div class="timeline__popout-row">
+        <dt>Icon</dt>
+        <dd data-field="emoji"></dd>
+      </div>
+      <div class="timeline__popout-row">
+        <dt>Title</dt>
+        <dd data-field="title"></dd>
+      </div>
+      <div class="timeline__popout-row">
+        <dt>Description</dt>
+        <dd data-field="tagline"></dd>
+      </div>
+      <div class="timeline__popout-row">
+        <dt>Date</dt>
+        <dd data-field="date"></dd>
+      </div>
+    </dl>
+    <div class="timeline__popout-actions">
+      <button type="button" class="timeline__popout-btn timeline__popout-btn--edit" id="timelinePopoutEdit">Edit</button>
+      <button type="button" class="timeline__popout-btn timeline__popout-btn--delete" id="timelinePopoutDelete">Delete</button>
+      <button type="button" class="timeline__popout-btn timeline__popout-btn--cancel" id="timelinePopoutCancel">Cancel</button>
+    </div>
+  </div>
+
+  <div class="timeline-editor-modal hidden" id="timelineEditorModal" role="dialog" aria-modal="true" aria-labelledby="timelineEditorTitle" aria-hidden="true">
+    <button type="button" class="timeline-editor-modal__backdrop" id="timelineEditorBackdrop" aria-label="Close"></button>
+    <div class="timeline-editor-modal__card">
+      <button type="button" class="passcode-modal__close" id="timelineEditorClose" aria-label="Close">×</button>
+      <h2 class="passcode-modal__title" id="timelineEditorTitle">Add to timeline</h2>
+      <form id="timelineEditorForm" class="timeline-editor-form">
+        <label class="login-label" for="festivalTitle">Title</label>
+        <input class="timeline-editor-input" type="text" id="festivalTitle" required maxlength="80" />
+
+        <label class="login-label" for="festivalTagline">Description</label>
+        <input class="timeline-editor-input" type="text" id="festivalTagline" maxlength="120" />
+
+        <div class="timeline-editor-form__row">
+          <div>
+            <label class="login-label" for="festivalEmoji">Emoji</label>
+            <input class="timeline-editor-input timeline-editor-input--emoji" type="text" id="festivalEmoji" maxlength="4" />
+          </div>
+          <div>
+            <label class="login-label" for="festivalDate">Date</label>
+            <input class="timeline-editor-input" type="text" id="festivalDate" placeholder="DD/MM/YYYY" maxlength="10" />
+          </div>
+        </div>
+
+        <label class="login-label" for="festivalAuthor">Author (optional)</label>
+        <input class="timeline-editor-input" type="text" id="festivalAuthor" maxlength="40" />
+
+        <p class="settings-error hidden" id="timelineEditorError" role="alert"></p>
+
+        <div class="passcode-modal__actions">
+          <button type="button" class="settings-btn settings-btn--secondary" id="timelineEditorCancel">Cancel</button>
+          <button type="submit" class="settings-btn settings-btn--primary" id="timelineEditorSave">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <p class="settings-toast hidden" id="homeToast" role="status" aria-live="polite"></p>
 
   <script src="js/seen-store.js"></script>
   <script src="js/views-store.js"></script>
+  <script src="js/manifest-store.js"></script>
+  <script src="js/timeline-editor.js"></script>
   <script src="js/home.js"></script>
 </body>
 </html>

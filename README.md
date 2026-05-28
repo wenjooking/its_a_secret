@@ -21,6 +21,10 @@ After a correct login, the session stays open in that browser until you sign out
 
 ### Change the passcode
 
+**In the app (recommended):** Sign in → **Settings** → **Security** → enter current, new, and confirm passcode → **Update passcode**. Works when the site runs with `npm start` (or another Node host like Render).
+
+**Manual (static deploy / fallback):**
+
 ```bash
 node scripts/hash-password.js 12345678
 ```
@@ -76,9 +80,11 @@ Copy `festivals/anniversary.json` → `festivals/your-festival-id.json` and edit
 - `assets.music` — filename or `null`  
 - Set `"status": "ready"` when content is done  
 
-### 3. Home card
+### 3. Home manifest (`festivals/manifest.json`)
 
-Add an entry in `festivals/manifest.json`:
+**Timeline** (`timeline`) — scrollable dates on the home page. Add or edit these with the pencil on the home page; they do **not** create moment cards.
+
+**Moments** (`festivals`) — clickable cards that open `festival.html?id=…`. Add these manually when a festival page is ready:
 
 ```json
 {
@@ -92,7 +98,9 @@ Add an entry in `festivals/manifest.json`:
 }
 ```
 
-Add `"author"` (optional) to show **by Name** under the title. Add `"date"` (optional, `DD/MM/YYYY`) on the top-right of the card and in the home timeline. Omit either when not needed yet.
+You can list the same id in both `timeline` and `festivals` if you want a date on the timeline and a card for the experience. Timeline-only entries need no `status` or festival JSON.
+
+Add `"author"` (optional) to show **by Name** under the title. Add `"date"` (optional, `DD/MM/YYYY`) on cards and timeline rows. Omit either when not needed yet.
 
 Add `"updatedAt"` (ISO date, e.g. `"2026-05-28"`) whenever you change letters or images. Visitors see a **New** dot until they open that moment; bump `updatedAt` again after the next edit.
 
@@ -104,7 +112,7 @@ Use `"status": "coming-soon"` until the festival page is ready (card stays disab
 |------|------|
 | `index.html` | Home — festival picker |
 | `festival.html?id=…` | One festival experience |
-| `festivals/manifest.json` | List of cards on home |
+| `festivals/manifest.json` | `timeline` (dates) + `festivals` (moment cards) |
 | `festivals/*.json` | Per-festival content & theme |
 | `js/views-store.js` | Shared view counts (Supabase / API / local) |
 | `js/` | Viewport, heart animation, page logic |
