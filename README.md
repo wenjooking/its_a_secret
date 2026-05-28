@@ -9,8 +9,25 @@ npm install
 npm start
 ```
 
+- **Login:** http://localhost:3000/login.html (required before other pages)  
 - **Home:** http://localhost:3000  
 - **Example festival:** http://localhost:3000/festival.html?id=valentine  
+
+## Login (whole site)
+
+All pages except `login.html` require an **8-digit passcode** (entered on the on-screen number pad; digits show as *).
+
+After a correct login, the session stays open in that browser until you sign out.
+
+### Change the passcode
+
+```bash
+node scripts/hash-password.js 12345678
+```
+
+Use your 8-digit code as the argument. Copy the hash into `config/auth.json` → `passwordHash`.
+
+This is a simple privacy lock for a personal site (the hash is in the repo). It is not strong security against someone technical.
 
 ## Add a new festival
 

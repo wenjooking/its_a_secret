@@ -62,5 +62,9 @@
     }
   }
 
+  document.getElementById("signOut")?.addEventListener("click", () => {
+    window.CoupleApp?.auth?.signOut();
+  });
+
   init();
 })();
