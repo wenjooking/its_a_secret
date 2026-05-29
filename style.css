@@ -1048,6 +1048,11 @@ a.festival-card .festival-card__badge {
   animation: hint-pulse 2.5s ease-in-out infinite;
 }
 
+.hint--music-blocked {
+  color: var(--theme-accent);
+  cursor: pointer;
+}
+
 @keyframes hint-pulse {
   0%,
   100% {

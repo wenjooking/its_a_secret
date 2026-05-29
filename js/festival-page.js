@@ -102,13 +102,48 @@
     return localStorage.getItem("couple_music_autoplay") !== "0";
   }
 
+  let musicNeedsGesture = false;
+  let defaultHint = "Scroll to read ↓";
+
+  async function tryPlayMusic() {
+    if (!music.src || !shouldAutoplayMusic()) return true;
+
+    try {
+      if (music.readyState < HTMLMediaElement.HAVE_FUTURE_DATA) {
+        music.load();
+      }
+      await music.play();
+      musicNeedsGesture = false;
+      hint.classList.remove("hint--music-blocked");
+      hint.textContent = defaultHint;
+      return true;
+    } catch {
+      musicNeedsGesture = true;
+      hint.classList.add("hint--music-blocked");
+      hint.textContent = "Tap anywhere for music · scroll to read ↓";
+      return false;
+    }
+  }
+
+  function bindMusicUnlock() {
+    const unlock = () => {
+      if (!musicNeedsGesture) return;
+      tryPlayMusic().then((ok) => {
+        if (ok) {
+          document.removeEventListener("pointerdown", unlock);
+          document.removeEventListener("touchstart", unlock);
+        }
+      });
+    };
+
+    document.addEventListener("pointerdown", unlock, { passive: true });
+    document.addEventListener("touchstart", unlock, { passive: true });
+  }
+
   function startExperience() {
     hint.classList.add("show");
     heart.start();
-
-    if (music.src && shouldAutoplayMusic()) {
-      music.play().catch(() => {});
-    }
+    tryPlayMusic();
   }
 
   function applyConfig(data) {
@@ -117,6 +152,7 @@
     document.getElementById("credit").textContent = data.credit;
     heroTitle.textContent = data.letter.title;
     hint.textContent = data.hero?.hint || "Scroll to read ↓";
+    defaultHint = hint.textContent;
 
     applyTheme(data.theme);
     renderLetterImages(data.assets, data.letter);
@@ -124,6 +160,7 @@
     const musicFile = data.assets?.music;
     if (musicFile) {
       music.src = assetUrl(data.assets.base, musicFile);
+      music.load();
     } else {
       music.removeAttribute("src");
     }
@@ -147,6 +184,7 @@
       markSeenFromManifest(id);
       viewport.init(canvas);
       setupScrollReveal();
+      bindMusicUnlock();
       startExperience();
     } catch {
       showError("We couldn’t find that moment.");
