@@ -83,6 +83,13 @@
   }
   const NOTE_TILTS = [-2.4, -1.5, -0.7, 0.6, 1.2, 1.9, -1.1, 2.2, -1.8, 0.9];
 
+  function noteImageSrc(image) {
+    if (!image) return "";
+    return /^(https?:)?\/\//i.test(image) || image.startsWith("data:")
+      ? image
+      : `assets/${image}`;
+  }
+
   function hasSavedPosition(note) {
     return (
       note &&
@@ -132,9 +139,17 @@
     card.style.setProperty("--motion-delay", `${(Math.abs(h) % 20) / 10}s`);
   }
 
+  function targetNoteWidth() {
+    const vw = window.innerWidth || 0;
+    if (vw <= 480) return 150;
+    if (vw <= 768) return 184;
+    return NOTE_WIDTH;
+  }
+
   function boardColumnWidth() {
-    const boardW = grid?.clientWidth || NOTE_WIDTH;
-    return Math.min(NOTE_WIDTH, Math.max(160, boardW - BOARD_PAD * 2));
+    const target = targetNoteWidth();
+    const boardW = grid?.clientWidth || target;
+    return Math.min(target, Math.max(138, boardW - BOARD_PAD * 2));
   }
 
   // Saved positions are absolute px from whatever screen authored them.
@@ -756,7 +771,7 @@
 
     clearEditImageState();
     if (note.image) {
-      editPad?.loadImage(`assets/${note.image}`);
+      editPad?.loadImage(noteImageSrc(note.image));
     } else {
       editPad?.clear();
     }
@@ -787,7 +802,7 @@
       card.dataset.noteId = note.id;
 
       const imageHtml = note.image
-        ? `<img class="note-card__image note-card__drawing" src="assets/${note.image}" alt="Drawing or photo on note" loading="lazy" />`
+        ? `<img class="note-card__image note-card__drawing" src="${noteImageSrc(note.image)}" alt="Drawing or photo on note" loading="lazy" />`
         : "";
 
       const bodyHtml = note.body ? `<p class="note-card__body"></p>` : "";

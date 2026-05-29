@@ -8,7 +8,34 @@
     return { ...data, festivals, timeline };
   }
 
+  function supabase() {
+    return window.CoupleApp?.supabase || null;
+  }
+
+  async function loadFromFile() {
+    const res = await fetch("festivals/manifest.json");
+    if (!res.ok) throw new Error("manifest");
+    return normalizeManifest(await res.json());
+  }
+
   async function load() {
+    // 1. Supabase (survives redeploys, syncs across devices)
+    const sb = supabase();
+    if (sb && (await sb.loadConfig())) {
+      const state = await sb.getState("manifest");
+      if (state.ok && state.found && state.value) {
+        localStorage.removeItem(OVERRIDE_KEY);
+        return normalizeManifest(state.value);
+      }
+      // No manifest row yet — seed it from the committed file.
+      if (state.ok && !state.found) {
+        const seed = await loadFromFile();
+        await sb.setState("manifest", seed);
+        return seed;
+      }
+    }
+
+    // 2. Node API (npm start / local dev)
     try {
       const res = await fetch("/api/manifest");
       if (res.ok) {
@@ -26,12 +53,21 @@
       /* ignore */
     }
 
-    const res = await fetch("festivals/manifest.json");
-    if (!res.ok) throw new Error("manifest");
-    return normalizeManifest(await res.json());
+    // 3. Static file fallback
+    return loadFromFile();
   }
 
   async function save(data) {
+    const sb = supabase();
+    if (sb && (await sb.loadConfig())) {
+      const normalized = normalizeManifest(data);
+      const r = await sb.setState("manifest", normalized);
+      if (r.ok) {
+        localStorage.removeItem(OVERRIDE_KEY);
+        return { ok: true, persisted: "supabase", manifest: normalized };
+      }
+    }
+
     try {
       const res = await fetch("/api/manifest", {
         method: "PUT",

@@ -58,9 +58,37 @@
     });
   }
 
+  function supabase() {
+    return window.CoupleApp?.supabase || null;
+  }
+
   async function load() {
     const cached = readCache();
 
+    // 1. Supabase (survives redeploys, syncs across devices)
+    const sb = supabase();
+    if (sb && (await sb.loadConfig())) {
+      const state = await sb.getState("notes");
+      if (state.ok && state.found && Array.isArray(state.value)) {
+        const merged = mergeNotesLists(state.value, cached);
+        writeCache(merged);
+        return {
+          notes: merged,
+          syncLayoutToServer: needsLayoutSync(state.value, merged),
+        };
+      }
+      // No notes row yet — seed it from the committed file/API below so
+      // existing notes are preserved into Supabase on first run.
+      if (state.ok && !state.found) {
+        const seed = await loadSeedNotes(cached);
+        if (seed.notes.length) {
+          await sb.setState("notes", seed.notes);
+        }
+        return { notes: seed.notes, syncLayoutToServer: false };
+      }
+    }
+
+    // 2. Node API (npm start / local dev)
     try {
       const res = await fetch("/api/notes");
       if (res.ok) {
@@ -81,6 +109,7 @@
       return { notes: cached, syncLayoutToServer: false };
     }
 
+    // 3. Static file fallback
     try {
       const res = await fetch("data/notes.json");
       if (res.ok) {
@@ -97,9 +126,34 @@
     return { notes: [], syncLayoutToServer: false };
   }
 
+  async function loadSeedNotes(cached) {
+    try {
+      const res = await fetch("data/notes.json");
+      if (res.ok) {
+        const data = await res.json();
+        const fileNotes = Array.isArray(data.notes) ? data.notes : [];
+        const merged = mergeNotesLists(fileNotes, cached);
+        writeCache(merged);
+        return { notes: merged };
+      }
+    } catch {
+      /* ignore */
+    }
+    return { notes: cached || [] };
+  }
+
   async function save(notes) {
     const payload = { notes };
     writeCache(notes);
+
+    const sb = supabase();
+    if (sb && (await sb.loadConfig())) {
+      const r = await sb.setState("notes", notes);
+      if (r.ok) {
+        writeCache(notes);
+        return { ok: true, persisted: "supabase", notes };
+      }
+    }
 
     try {
       const res = await fetch("/api/notes", {
@@ -129,6 +183,14 @@
   }
 
   async function uploadImage(noteId, dataUrl) {
+    const sb = supabase();
+    if (sb && (await sb.loadConfig())) {
+      const r = await sb.uploadImage(noteId, dataUrl);
+      if (r.ok) return { ok: true, image: r.url };
+      if (r.error) return { ok: false, error: r.error };
+      /* fall through to Node API if Supabase upload failed unexpectedly */
+    }
+
     try {
       const res = await fetch("/api/notes/upload", {
         method: "POST",
@@ -143,7 +205,8 @@
     } catch {
       return {
         ok: false,
-        error: "Image upload needs npm start (not static hosting alone).",
+        error:
+          "Image upload needs Supabase (set config/supabase.json) or the Node server (npm start).",
       };
     }
   }

@@ -57,6 +57,47 @@ Without setup, each browser keeps its own count (`localStorage`). To share count
 
 Priority: Supabase → Node `/api/views` → `data/views.json` → `localStorage`.
 
+## Notes & timeline that survive redeploys (Supabase)
+
+On a host like **Render free**, anything written to the server's disk (notes, the
+timeline/moments, uploaded photos, passcode changes) is **wiped on every
+redeploy or restart**. To keep notes, the timeline, and note images permanently
+and synced across devices, store them in **Supabase**:
+
+1. Do the **View counts** Supabase steps above (project + `config/supabase.json`).
+2. In **SQL Editor**, run the whole of `supabase/schema.sql` again (it now also
+   creates the `app_state` table, the `note-images` storage bucket, and their
+   policies; it's safe to re-run).
+3. Confirm **Storage → note-images** exists and is **Public**.
+
+How it works:
+
+- **Notes** are stored as JSON in `app_state` (key `notes`).
+- **Timeline + moments** (the manifest) are stored in `app_state` (key `manifest`).
+- **Photos / drawings** upload to the public `note-images` bucket; notes keep the
+  full image URL.
+- Load/save priority for each: **Supabase → Node API → static file → localStorage**.
+- On first load with an empty database, the committed `data/notes.json` and
+  `festivals/manifest.json` are used to **seed** Supabase, so nothing is lost.
+
+> Security: the publishable/anon key ships in the site, so anyone who finds it can
+> read/write this data. That matches the existing client-side passcode (a light
+> privacy gate, not strong security). Add Supabase Auth later for stronger control.
+
+## Deploy on Render (uploads + persistence)
+
+1. Push this repo to GitHub.
+2. On [render.com](https://render.com): **New → Blueprint**, pick the repo
+   (`render.yaml` sets build `npm install`, start `npm start`).
+3. **Environment → Secret Files**: add a file at path `config/supabase.json`
+   with your Supabase URL + publishable key (this file is gitignored, so it must
+   be added here for the live site to reach Supabase).
+4. Open the Render URL — notes, timeline edits, and image/drawing uploads now
+   persist in Supabase and survive redeploys.
+
+Without `config/supabase.json` on Render, the app still runs but falls back to the
+server's ephemeral disk (data is lost on redeploy).
+
 ## Add a new festival
 
 ### 1. Assets folder
