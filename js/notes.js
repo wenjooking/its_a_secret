@@ -137,6 +137,22 @@
     return Math.min(NOTE_WIDTH, Math.max(160, boardW - BOARD_PAD * 2));
   }
 
+  // Saved positions are absolute px from whatever screen authored them.
+  // Scale them to fit the current (possibly narrower) board so notes never
+  // run off-screen. Returns a function mapping a saved x to a display x.
+  function horizontalFitMapper(colW, boardW) {
+    const maxLeft = Math.max(0, boardW - colW - BOARD_PAD);
+    let maxX = 0;
+    notes.forEach((n) => {
+      if (hasSavedPosition(n) && n.x > maxX) maxX = n.x;
+    });
+    const scale = maxX > maxLeft && maxX > 0 ? maxLeft / maxX : 1;
+    return (x) => {
+      const scaled = scale === 1 ? x : x * scale;
+      return Math.round(Math.max(0, Math.min(maxLeft, scaled)));
+    };
+  }
+
   function layoutNotesBoard() {
     if (!grid || !notes.length) {
       if (grid) grid.style.minHeight = "";
@@ -149,6 +165,7 @@
       1,
       Math.floor((boardW - BOARD_PAD * 2 + BOARD_GAP) / (colW + BOARD_GAP))
     );
+    const fitX = horizontalFitMapper(colW, boardW);
     const byId = Object.fromEntries(notes.map((n) => [n.id, n]));
     const cards = [...grid.querySelectorAll(".note-card")];
 
@@ -164,7 +181,8 @@
       applyNoteTilt(card, note, index);
 
       if (hasSavedPosition(note)) {
-        card.style.left = `${note.x}px`;
+        const dispX = fitX(note.x);
+        card.style.left = `${dispX}px`;
         card.style.top = `${note.y}px`;
         card.dataset.boardLaidOut = "1";
         const bottom = note.y + card.offsetHeight;
